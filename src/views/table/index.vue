@@ -3,37 +3,32 @@
     <el-table
       v-loading="listLoading"
       :data="list"
-      element-loading-text="Loading"
       border
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="ID" width="95">
+      <el-table-column align="center" label="序号" width="95">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="Title">
+      <el-table-column label="用户名" prop="name" width="180" align="center" />
+      <el-table-column label="审核权限" width="130" align="center" prop="verifyLv">
         <template slot-scope="scope">
-          {{ scope.row.title }}
+          <span>{{ verifyObj[scope.row.verifyLv] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
+      <el-table-column label="控制安全级别" width="130" align="center" prop="isSafety">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          {{ scope.row.isSafety ? '是' : '否' }}
         </template>
       </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
+      <el-table-column label="管理区域" align="center" prop="manageAreaStr">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          {{ scope.row.manageAreaStr }}
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
+      <el-table-column align="center" label="操作" width="160">
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span>{{ scope.row.display_time }}</span>
@@ -44,8 +39,13 @@
 </template>
 
 <script>
-import { getList } from '@/api/table'
 
+const verifyObj =
+    {
+      'verify-lv1': '初审',
+      'verify-lv2': '终审',
+      'step': 1 // 审核步数
+    }
 export default {
   filters: {
     statusFilter(status) {
@@ -60,7 +60,8 @@ export default {
   data() {
     return {
       list: null,
-      listLoading: true
+      listLoading: true,
+      verifyObj
     }
   },
   created() {
@@ -69,8 +70,8 @@ export default {
   methods: {
     fetchData() {
       this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
+      this.$api.getList().then(response => {
+        this.list = response.items
         this.listLoading = false
       })
     }
