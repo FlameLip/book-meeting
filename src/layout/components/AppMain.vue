@@ -1,3 +1,9 @@
+<!--
+ * @Descripttion:
+ * @Version: 1.0
+ * @Author: FlameLip 18070568168@163.com
+ * @Date: 2022-12-01 16:00:19
+-->
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
@@ -20,12 +26,12 @@ export default {
 <style scoped>
 .app-main {
   /*50 = navbar  */
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - 60px);
   width: 100%;
   position: relative;
   overflow: hidden;
 }
-.fixed-header+.app-main {
+.fixed-header + .app-main {
   padding-top: 50px;
 }
 </style>

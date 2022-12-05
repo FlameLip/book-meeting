@@ -1,33 +1,56 @@
 <template>
   <div class="navbar">
-    <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <div class="title-container">
+      <img
+        src="https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png"
+        alt=""
+      />
+      <h3>某某某监狱视频会见管理系统</h3>
+    </div>
+    <hamburger
+      :is-active="sidebar.opened"
+      class="hamburger-container"
+      @toggleClick="toggleSideBar"
+    />
 
-    <breadcrumb class="breadcrumb-container" />
-
+    <!-- <breadcrumb class="breadcrumb-container" /> -->
     <div class="right-menu">
+      <img
+        src="https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png"
+        alt=""
+      />
+      <span>管理员</span>
+      <span style="padding: 0 10px">|</span>
+      <span @click="logout" style="cursor: pointer">退出</span>
+    </div>
+    <!-- <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <img :src="avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" />
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
+            <el-dropdown-item> Home </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
+          <a
+            target="_blank"
+            href="https://github.com/PanJiaChen/vue-admin-template/"
+          >
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
+          <a
+            target="_blank"
+            href="https://panjiachen.github.io/vue-element-admin-site/#/"
+          >
             <el-dropdown-item>Docs</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+            <span style="display: block">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -42,10 +65,7 @@ export default {
     Hamburger
   },
   computed: {
-    ...mapGetters([
-      'sidebar',
-      'avatar'
-    ])
+    ...mapGetters(['sidebar', 'avatar'])
   },
   methods: {
     toggleSideBar() {
@@ -65,18 +85,18 @@ export default {
   overflow: hidden;
   position: relative;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 
   .hamburger-container {
     line-height: 46px;
     height: 100%;
     float: left;
     cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+    transition: background 0.3s;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
-      background: rgba(0, 0, 0, .025)
+      background: rgba(0, 0, 0, 0.025);
     }
   }
 
@@ -103,10 +123,10 @@ export default {
 
       &.hover-effect {
         cursor: pointer;
-        transition: background .3s;
+        transition: background 0.3s;
 
         &:hover {
-          background: rgba(0, 0, 0, .025)
+          background: rgba(0, 0, 0, 0.025);
         }
       }
     }
@@ -133,6 +153,46 @@ export default {
           font-size: 12px;
         }
       }
+    }
+  }
+}
+.navbar {
+  height: 60px;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  background-image: linear-gradient(180deg, #ffffff 0%, #ffffff 100%);
+  display: flex;
+  .title-container {
+    padding-left: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 34px;
+      height: 34px;
+      margin-right: 10px;
+    }
+  }
+  .hamburger-container {
+    line-height: 60px;
+  }
+  .right-menu {
+    height: 100%;
+    line-height: 60px;
+    position: absolute;
+    right: 30px;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    color: #404040;
+    img {
+      width: 32px;
+      height: 32px;
+      padding-right: 10px;
     }
   }
 }
