@@ -1,9 +1,3 @@
-/*
- * @Descripttion:
- * @Version: 1.0
- * @Author: jianlvqi jianlvqi@jxcc.com
- * @Date: 2022-12-01 16:00:19
- */
 import Cookies from 'js-cookie'
 
 const TokenKey = 'vue_admin_template_token'

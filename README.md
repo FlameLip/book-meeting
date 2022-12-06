@@ -1,9 +1,3 @@
-<!--
- * @Descripttion: 
- * @Version: 1.0
- * @Author: FlameLip 18070568168@163.com
- * @Date: 2022-12-01 16:00:19
--->
 ## Build Setup
 
 ```bash

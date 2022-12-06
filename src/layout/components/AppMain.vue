@@ -1,9 +1,3 @@
-<!--
- * @Descripttion:
- * @Version: 1.0
- * @Author: FlameLip 18070568168@163.com
- * @Date: 2022-12-01 16:00:19
--->
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
@@ -27,9 +21,13 @@ export default {
 .app-main {
   /*50 = navbar  */
   min-height: calc(100vh - 60px);
-  width: 100%;
-  position: relative;
+  width: calc(100vw - 270px);
   overflow: hidden;
+  float: right;
+  margin: 24px 0 0 30px;
+  border-radius: 6px;
+  background-color: #fff;
+  padding: 20px 0 0 24px;
 }
 .fixed-header + .app-main {
   padding-top: 50px;

@@ -13,12 +13,22 @@
         </template>
       </el-table-column>
       <el-table-column label="用户名" prop="name" width="180" align="center" />
-      <el-table-column label="审核权限" width="130" align="center" prop="verifyLv">
+      <el-table-column
+        label="审核权限"
+        width="130"
+        align="center"
+        prop="verifyLv"
+      >
         <template slot-scope="scope">
           <span>{{ verifyObj[scope.row.verifyLv] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="控制安全级别" width="130" align="center" prop="isSafety">
+      <el-table-column
+        label="控制安全级别"
+        width="130"
+        align="center"
+        prop="isSafety"
+      >
         <template slot-scope="scope">
           {{ scope.row.isSafety ? '是' : '否' }}
         </template>
@@ -39,13 +49,11 @@
 </template>
 
 <script>
-
-const verifyObj =
-    {
-      'verify-lv1': '初审',
-      'verify-lv2': '终审',
-      'step': 1 // 审核步数
-    }
+const verifyObj = {
+  'verify-lv1': '初审',
+  'verify-lv2': '终审',
+  step: 1 // 审核步数
+}
 export default {
   filters: {
     statusFilter(status) {

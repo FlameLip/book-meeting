@@ -46,116 +46,139 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
-  },
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    redirect: '/userManage',
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'userManage',
+        name: 'userManage',
+        component: () => import('@/views/user-manage/list'),
+        meta: { title: '用户管理', icon: 'el-icon-user-solid' }
       }
     ]
   },
 
   {
-    path: '/form',
+    path: '/applyList',
     component: Layout,
+    redirect: '/applyList',
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        path: 'applyList',
+        name: 'applyList',
+        component: () => import('@/views/apply-list/list'),
+        meta: { title: '申请列表', icon: 'el-icon-document' }
       }
     ]
   },
 
   {
-    path: '/nested',
+    path: '/auditList',
     component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
+    redirect: '/auditList',
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
+        path: 'auditList',
+        name: 'auditList',
+        component: () => import('@/views/audit-list/list'),
+        meta: { title: '当日审核列表', icon: 'el-icon-document-checked' }
       }
     ]
   },
 
   {
-    path: 'external-link',
+    path: '/callLog',
     component: Layout,
+    redirect: '/callLog',
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'callLog',
+        name: 'callLog',
+        component: () => import('@/views/call-log/list'),
+        meta: { title: '通话记录查询', icon: 'el-icon-phone-outline' }
+      }
+    ]
+  },
+
+  {
+    path: '/memberInfo',
+    component: Layout,
+    redirect: '/memberInfo',
+    children: [
+      {
+        path: 'memberInfo',
+        name: 'memberInfo',
+        component: () => import('@/views/member-info/list'),
+        meta: { title: '家属信息查询', icon: 'el-icon-info' }
+      }
+    ]
+  },
+
+  {
+    path: '/memberAudit',
+    component: Layout,
+    redirect: '/memberAudit',
+    children: [
+      {
+        path: 'memberAudit',
+        name: 'memberAudit',
+        component: () => import('@/views/member-audit/list'),
+        meta: { title: '家属批量审核', icon: 'el-icon-s-check' }
+      }
+    ]
+  },
+
+  {
+    path: '/meettingPolicy',
+    component: Layout,
+    redirect: '/meettingPolicy',
+    children: [
+      {
+        path: 'meettingPolicy',
+        name: 'meettingPolicy',
+        component: () => import('@/views/meetting-policy/list'),
+        meta: { title: '会见政策', icon: 'el-icon-s-custom' }
+      }
+    ]
+  },
+
+  {
+    path: '/callArrange',
+    component: Layout,
+    redirect: '/callArrange',
+    children: [
+      {
+        path: 'callArrange',
+        name: 'callArrange',
+        component: () => import('@/views/call-arrange/list'),
+        meta: { title: '通话日安排', icon: 'el-icon-mobile-phone' }
+      }
+    ]
+  },
+
+  {
+    path: '/systemSetting',
+    component: Layout,
+    redirect: '/systemSetting',
+    children: [
+      {
+        path: 'systemSetting',
+        name: 'systemSetting',
+        component: () => import('@/views/system-setting/index'),
+        meta: { title: '系统配置', icon: 'el-icon-setting' }
+      }
+    ]
+  },
+
+  {
+    path: '/otherModule',
+    component: Layout,
+    redirect: '/otherModule',
+    children: [
+      {
+        path: 'otherModule',
+        name: 'otherModule',
+        component: () => import('@/views/other-module/index'),
+        meta: { title: '其他', icon: 'el-icon-more' }
       }
     ]
   },
@@ -164,11 +187,12 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
 
 const router = createRouter()
 
