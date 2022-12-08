@@ -38,7 +38,7 @@ service.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response
-  */
+   */
 
   /**
    * Determine the request status by custom code
@@ -47,7 +47,6 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 0) {
       Message({
@@ -59,11 +58,15 @@ service.interceptors.response.use(
       // 602: Illegal token; 603: Token expired;
       if (res.code === 602 || res.code === 603) {
         // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
+        MessageBox.confirm(
+          'You have been logged out, you can cancel to stay on this page, or log in again',
+          'Confirm logout',
+          {
+            confirmButtonText: 'Re-Login',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }
+        ).then(() => {
           store.dispatch('user/resetToken').then(() => {
             location.reload()
           })
@@ -92,13 +95,16 @@ service.interceptors.response.use(
  */
 export function get(url, params) {
   return new Promise((resolve, reject) => {
-    service.get(url, {
-      params: params
-    }).then(res => {
-      resolve(res.data)
-    }).catch(err => {
-      reject(err.data)
-    })
+    service
+      .get(url, {
+        params: params
+      })
+      .then(res => {
+        resolve(res.data)
+      })
+      .catch(err => {
+        reject(err.data)
+      })
   })
 }
 
@@ -109,12 +115,13 @@ export function get(url, params) {
  */
 export function post(url, data) {
   return new Promise((resolve, reject) => {
-    service.post(url, data)
+    service
+      .post(url, data)
       .then(res => {
-        resolve(res.data)
+        resolve(res)
       })
       .catch(err => {
-        reject(err.data)
+        reject(err)
       })
   })
 }

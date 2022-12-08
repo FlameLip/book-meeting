@@ -1,28 +1,35 @@
 const Mock = require('mockjs')
 
 const data = Mock.mock({
-  'items|30': [{
-    id: '@id',
-    title: '@sentence(10, 20)',
-    'status|1': ['published', 'draft', 'deleted'],
-    author: 'name',
-    display_time: '@datetime',
-    pageviews: '@integer(300, 5000)'
-  }]
+  'items|10': [
+    {
+      uname: '@sentence(2, 3)',
+      verifyLv: 'verify-lv1',
+      isSafety: true,
+      manageAreaList: [
+        {
+          id: 'area1',
+          name: '监区1'
+        },
+        {
+          id: 'area2',
+          name: '监区2'
+        }
+      ]
+    }
+  ]
 })
 
 module.exports = [
   {
-    url: '/vue-admin-template/table/list',
+    url: '/user/list',
     type: 'post',
     response: config => {
       const items = data.items
       return {
         code: 0,
-        data: {
-          total: items.length,
-          items: items
-        }
+        total: items.length,
+        list: items
       }
     }
   }

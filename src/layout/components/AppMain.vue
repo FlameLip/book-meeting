@@ -27,7 +27,7 @@ export default {
   margin: 24px 0 0 30px;
   border-radius: 6px;
   background-color: #fff;
-  padding: 20px 0 0 24px;
+  padding: 20px 24px 0 24px;
 }
 .fixed-header + .app-main {
   padding-top: 50px;
