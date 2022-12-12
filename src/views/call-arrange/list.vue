@@ -9,9 +9,7 @@
               <div class="area-box">
                 {{
                   weekdayAreaInfo[index].length
-                    ? weekdayAreaInfo[index]
-                        .map(item => item.areaName)
-                        .join('、')
+                    ? weekdayAreaInfo[index].join('、')
                     : ''
                 }}
               </div>
@@ -132,7 +130,8 @@
     <update-week
       ref="updateWeek"
       :weekDay="weekDay"
-      @submit="getWeekdayAreaInfo"
+      :areaList="areaList"
+      @submit="updateWeek"
       :weekdayAreaInfo="weekdayAreaInfo"
     />
   </div>
@@ -183,9 +182,9 @@ export default {
       weekDay: '',
       weekdayAreaInfo: {
         prisonId: '', // 监狱ID
-        startTime: '10:00', // 可为空, 为空不修改配置
-        endTime: '22:00', //可为空, 为空不修改配置
-        monday: ['监区1', '监区2', '监区3'],
+        startTime: '', // 可为空, 为空不修改配置
+        endTime: '', //可为空, 为空不修改配置
+        monday: [],
         tuesday: [], //周二监区
         wednesday: [], //周三监区
         thursday: [], //周四监区
@@ -223,15 +222,22 @@ export default {
       },
       cellStyle: {
         textAlign: 'center'
-      }
+      },
+      areaList: [],
+      prisonId: 'gds-szs-szjy'
     }
   },
   mounted() {
     this.getWeekdayAreaInfo()
     this.getHolidayConfig()
+    this.getAreaList()
   },
   methods: {
     cloneDeep,
+    async getAreaList() {
+      const res = await this.$api.getAreaList({ prisonId: this.prisonId })
+      this.areaList = res
+    },
     handleClick(tab, event) {
       if (tab === '1') {
         this.getWeekdayAreaInfo()
@@ -246,39 +252,9 @@ export default {
     async getWeekdayAreaInfo() {
       try {
         this.callLoading = true
-        // const res = await this.$api.getWeekdayAreaInfo({ prisonId: '' })
-        const res = {
-          startTime: '09:00',
-          endTime: '22:00',
-          monday: [
-            {
-              areaId: 'area1',
-              areaName: '监区1'
-            },
-            {
-              areaId: 'area2',
-              areaName: '监区1'
-            },
-            {
-              areaId: 'area3',
-              areaName: '监区1'
-            },
-            {
-              areaId: 'area4',
-              areaName: '监区1'
-            },
-            {
-              areaId: 'area5',
-              areaName: '监区1'
-            }
-          ],
-          tuesday: [],
-          wednesday: [],
-          thursday: [],
-          friday: [],
-          saturday: [],
-          sunday: []
-        }
+        const res = await this.$api.getWeekdayAreaInfo({
+          prisonId: this.prisonId
+        })
         this.weekdayAreaInfo = res
       } finally {
         this.callLoading = false
@@ -346,12 +322,17 @@ export default {
         this.$message.success('操作成功')
         this.getHolidayConfig()
       })
+    },
+    async updateWeek(data) {
+      this.weekdayAreaInfo[this.weekDay] = data
+      await this.$api.setWeekdayAreaInfo(this.weekdayAreaInfo)
+      this.getWeekdayAreaInfo()
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .table-list {
   border: 1px solid rgba(238, 238, 238, 1);
   border-bottom: none;

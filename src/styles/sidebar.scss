@@ -187,7 +187,7 @@
   margin-top: -2px;
 }
 
-ul, li {
+ul, li, h1, h2, h3 {
   list-style: none;
   padding: 0px;
   margin: 0px;
@@ -223,6 +223,10 @@ ul, li {
     }
   }
     
+}
+.el-form-item__label{
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .el-dialog {

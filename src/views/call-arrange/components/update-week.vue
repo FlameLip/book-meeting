@@ -18,12 +18,9 @@
         v-model="checkedArea"
         @change="handleCheckedAreaChange"
       >
-        <el-checkbox
-          v-for="item in manageAreaList"
-          :label="item.areaId"
-          :key="item.areaId"
-          >{{ item.areaName }}</el-checkbox
-        >
+        <el-checkbox v-for="item in manageAreaList" :label="item" :key="item">{{
+          item
+        }}</el-checkbox>
       </el-checkbox-group>
     </div>
     <span slot="footer" class="dialog-footer">
@@ -35,7 +32,7 @@
 
 <script>
 export default {
-  props: ['weekDay', 'weekdayAreaInfo'],
+  props: ['weekDay', 'weekdayAreaInfo', 'areaList'],
   data() {
     return {
       dialogVisible: false,
@@ -48,14 +45,8 @@ export default {
   watch: {
     dialogVisible(newVal) {
       if (newVal) {
-        this.manageAreaList = new Array(30).fill('').map((item, index) => {
-          return {
-            areaId: 'area' + (index + 1),
-            areaName: '监区' + (index + 1)
-          }
-        })
-        this.checkedArea =
-          this.weekdayAreaInfo[this.weekDay].map(item => item.areaId) || []
+        this.manageAreaList = this.areaList.map(item => item.name)
+        this.checkedArea = this.weekdayAreaInfo[this.weekDay] || []
         let checkedCount = this.checkedArea.length
         this.checkAll = checkedCount === this.manageAreaList.length
         this.isIndeterminate =
@@ -77,13 +68,13 @@ export default {
         checkedCount > 0 && checkedCount < this.manageAreaList.length
     },
     async updateSubmit() {
-      await this.$api.setWeekdayAreaInfo({
-        prisonId: '',
-        [this.weekDay]: this.checkedArea
-      })
+      // await this.$api.setWeekdayAreaInfo({
+      //   prisonId: '',
+      //   [this.weekDay]: this.checkedArea
+      // })
       this.$message.success('修改成功')
-      this.$emit('submit')
       this.dialogVisible = false
+      this.$emit('submit', this.checkedArea)
     }
   }
 }

@@ -159,17 +159,20 @@ export default {
       } else {
         params = { ...this.pageOptions, prisonId: '', ...this.searchForm }
       }
-      this.$api.getUserList(params).then(res => {
-        this.list = res.list
+      try {
+        this.$api.getUserList(params).then(res => {
+          this.list = res.list
+          this.total = res.total
+          this.list.forEach(
+            item =>
+              (item.manageAreaStr = item.manageAreaList
+                .map(_item => _item.name)
+                .join('、'))
+          )
+        })
+      } finally {
         this.listLoading = false
-        this.total = res.total
-        this.list.forEach(
-          item =>
-            (item.manageAreaStr = item.manageAreaList
-              .map(_item => _item.name)
-              .join('、'))
-        )
-      })
+      }
     },
     openDialog(row) {
       this.rowData = cloneDeep(row)
