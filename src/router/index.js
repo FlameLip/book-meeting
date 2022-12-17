@@ -113,19 +113,19 @@ export const constantRoutes = [
     ]
   },
 
-  {
-    path: '/memberAudit',
-    component: Layout,
-    redirect: '/memberAudit',
-    children: [
-      {
-        path: 'memberAudit',
-        name: 'memberAudit',
-        component: () => import('@/views/member-audit/list'),
-        meta: { title: '家属批量审核', icon: 'el-icon-s-check' }
-      }
-    ]
-  },
+  // {
+  //   path: '/memberAudit',
+  //   component: Layout,
+  //   redirect: '/memberAudit',
+  //   children: [
+  //     {
+  //       path: 'memberAudit',
+  //       name: 'memberAudit',
+  //       component: () => import('@/views/member-audit/list'),
+  //       meta: { title: '家属批量审核', icon: 'el-icon-s-check' }
+  //     }
+  //   ]
+  // },
 
   {
     path: '/meettingPolicy',

@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="call-container">
       <div class="module-title">
-        <h3>身份认证SIM卡</h3>
+        <h3>通话政策</h3>
       </div>
       <div class="search-form">
         <el-form
@@ -55,9 +55,9 @@
           <el-form-item prop="phoneCode" label="特批账户">
             <el-input v-model="unusualForm.phoneCode"></el-input>
           </el-form-item>
-          <el-form-item prop="minutePerMetting" label="每次通话人数">
+          <el-form-item prop="minutePerMeeting" label="每次通话人数">
             <el-input-number
-              v-model="unusualForm.minutePerMetting"
+              v-model="unusualForm.minutePerMeeting"
               :controls="false"
               :min="1"
               :max="999"
@@ -84,7 +84,7 @@
             </template>
           </el-table-column>
           <el-table-column label="手机号" prop="phoneCode" />
-          <el-table-column label="最大通话时长" prop="minutePerMetting">
+          <el-table-column label="最大通话时长" prop="minutePerMeeting">
           </el-table-column>
           <el-table-column label="操作" width="180">
             <template slot-scope="scope">
@@ -123,7 +123,7 @@ export default {
       },
       unusualForm: {
         phoneCode: '', //手机号
-        minutePerMetting: 0 // 最大通话时长
+        minutePerMeeting: 0 // 最大通话时长
       },
       unusualRules: {
         phoneCode: [
@@ -133,7 +133,7 @@ export default {
             trigger: 'change'
           }
         ],
-        minutePerMetting: [
+        minutePerMeeting: [
           {
             required: true,
             message: '请输入最大通话时长',
@@ -188,7 +188,8 @@ export default {
         page: 1,
         pageSize: 10
       },
-      total: 0
+      total: 0,
+      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
     }
   },
   created() {
@@ -205,7 +206,7 @@ export default {
   },
   methods: {
     async getMeetingRule() {
-      const res = await this.$api.getMeetingRule({ prisonId: '' })
+      const res = await this.$api.getMeetingRule({ prisonId: this.prisonId })
       this.callForm = res
     },
     addMeetingRule() {
@@ -215,6 +216,7 @@ export default {
           prisonId: this.prisonId,
           ...this.callForm
         })
+        this.$message.success('应用成功')
       })
     },
     unusualConfig() {
@@ -224,13 +226,15 @@ export default {
           prisonId: this.prisonId,
           ...this.unusualForm
         })
+        this.$message.success('添加成功')
+        this.getList()
       })
     },
     getList() {
       try {
         this.listLoading = true
-        const params = { ...this.pageOptions, prisonId: '' }
-        this.$api.getPhoneCodeWhiteList(params).then(res => {
+        const params = { ...this.pageOptions, prisonId: this.prisonId }
+        this.$api.unusualList(params).then(res => {
           this.list = res.list
           this.total = res.total
         })
@@ -244,7 +248,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        await this.$api.deletePhone({ phoneCode: row.phoneCode })
+        await this.$api.deleteUnusual({ phoneCode: row.phoneCode })
         this.$message.success('删除成功!')
         this.getList()
       })

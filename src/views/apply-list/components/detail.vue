@@ -1,71 +1,95 @@
 <template>
   <div class="dialog-container">
     <el-dialog
-      :title="title"
       :visible.sync="dialogVisible"
       width="1000px"
       center
       :show-close="false"
     >
-      <el-form
-        :model="formData"
-        ref="addUser"
-        label-width="120px"
-        label-position="left"
-        :rules="rules"
-      >
-        <el-form-item label="用户名：" prop="uname">
-          <el-input
-            style="width: 220px"
-            v-model="formData.uname"
-            placeholder="请输入用户名"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="登录密码：" prop="passwd">
-          <el-input
-            style="width: 220px"
-            v-model="formData.passwd"
-            placeholder="请输入登录密码"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="审核权限：" prop="verifyLv">
-          <el-select
-            v-model="formData.verifyLv"
-            placeholder="请选择审核权限"
-            style="width: 220px"
+      <div class="info-content">
+        <div class="info-left">
+          <el-image
+            style="width: 160px; height: 160px"
+            :src="rowData.fxProfilePhotoUrl"
+            :preview-src-list="srcList"
           >
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="控制安全级别：" prop="isSafety">
-          <el-select
-            v-model="formData.isSafety"
-            placeholder="请选择控制安全级别"
-            style="width: 220px"
-          >
-            <el-option label="是" :value="true"></el-option>
-            <el-option label="否" :value="false"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          label="管理区域："
-          prop="manageAreaList"
-          class="manage-area"
-        >
-          <el-checkbox-group v-model="formData.manageAreaList">
-            <el-checkbox
-              v-for="item in 20"
-              :key="item"
-              :label="'监区' + item"
-              name="manageAreaList"
-            ></el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-      </el-form>
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image>
+          <div class="img-desc">服刑人员头像</div>
+        </div>
+        <div class="info-middle">
+          <div class="table-box">
+            <ul>
+              <li>
+                <div class="table-tr">服刑人员</div>
+                <div class="table-td">{{ rowData.fxName }}</div>
+              </li>
+              <li>
+                <div class="table-tr">所在监区</div>
+                <div class="table-td">{{ rowData.areaName }}</div>
+              </li>
+              <li>
+                <div class="table-tr">身份号码</div>
+                <div class="table-td">{{ rowData.members[0].memberPID }}</div>
+              </li>
+              <li>
+                <div class="table-tr">家属关系</div>
+                <div class="table-td">
+                  {{ rowData.members[0].memberRelation }}
+                </div>
+              </li>
+              <li>
+                <div class="table-tr">关系类型</div>
+                <div class="table-td">{{ rowData.members[0].memberType }}</div>
+              </li>
+              <li>
+                <div class="table-tr">户籍</div>
+                <div class="table-td">{{ rowData.members[0].verifyTime }}</div>
+              </li>
+              <li>
+                <div class="table-tr">性别</div>
+                <div class="table-td">{{ rowData.members[0].gender }}</div>
+              </li>
+              <li>
+                <div class="table-tr">认证电话</div>
+                <div class="table-td">{{ rowData.memberPhoneCode }}</div>
+              </li>
+              <li>
+                <div class="table-tr">家庭住址</div>
+                <div class="table-td">{{ rowData.members[0].address }}</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="info-right">
+          <h3>身份证照片</h3>
+          <div class="img-box">
+            <el-image
+              style="width: 241px; height: 136px"
+              :src="rowData.members[0].memberPIDImgZUrl"
+              :preview-src-list="srcList"
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+            <el-image
+              style="width: 241px; height: 136px"
+              :src="rowData.members[0].memberPIDImgBUrl"
+              :preview-src-list="srcList"
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </div>
+        </div>
+      </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="danger" @click="close">拒绝</el-button>
-        <el-button type="success" @click="submit">审核</el-button>
+        <el-button type="danger" @click="reject">拒绝</el-button>
+        <el-button type="success" @click="accept">审核</el-button>
       </span>
     </el-dialog>
   </div>
@@ -75,73 +99,59 @@
 export default {
   data() {
     return {
-      rules: {
-        uname: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
-        ],
-        passwd: [
-          { required: true, message: '请填写登录密码', trigger: 'blur' }
-        ],
-        verifyLv: [
-          { required: true, message: '请选择审核权限', trigger: 'change' }
-        ],
-        isSafety: [
-          {
-            required: true,
-            message: '请选择是否控制安全级别',
-            trigger: 'change'
-          }
-        ],
-        manageAreaList: [
-          {
-            type: 'array',
-            required: true,
-            message: '请至少选择管理区域',
-            trigger: 'change'
-          }
-        ]
-      },
-      formData: {
-        uname: '',
-        passwd: '',
-        verifyLv: '',
-        isSafety: '', // false/true
-        manageAreaList: []
-      },
       dialogVisible: false,
-      title: '申请详情'
+      srcList: [],
+      reasonList: [],
+      timeList: []
     }
   },
   props: ['rowData'],
   watch: {
     dialogVisible(newVal) {
       if (newVal) {
-        this.initData()
-        this.formData = this.rowData
+        const { fxProfilePhotoUrl, members } = this.rowData
+        this.srcList = [
+          fxProfilePhotoUrl,
+          members[0].memberPIDImgZUrl,
+          members[0].memberPIDImgBUrl
+        ]
       }
     }
   },
   methods: {
-    initData() {
-      this.formData = {
-        uname: '',
-        passwd: '',
-        verifyLv: '',
-        isSafety: '', // false/true
-        manageAreaList: []
-      }
-      this.title = '添加用户'
+    async getApplyrRejectList() {
+      const res = await this.$api.getApplyrRejectList()
+      this.reasonList = res
     },
-    submit() {
-      this.$refs.addUser.validate(valid => {
-        if (!valid) return
-        console.log('submit!')
+    async getUsableTimeList() {
+      const res = await this.$api.getUsableTimeList()
+      this.time = res
+    },
+    async accept() {
+      await this.$api.applyrAccept({
+        prisonId: '', //监狱ID
+        meetingId: this.rowData.meetingId,
+        windowId: this.rowData.windowId,
+        order: this.formData.order,
+        sTime: this.formData.sTime,
+        eTime: this.formData.eTime
       })
-    },
-    close() {
+      this.$message.success('操作成功')
       this.dialogVisible = false
-      // this.$refs.addUser.resetFields()
+      this.$emit('reload')
+    },
+    async reject() {
+      await this.$api.applyrReject({
+        prisonId: '', //监狱ID
+        meetingId: this.rowData.meetingId,
+        windowId: this.rowData.windowId,
+        order: this.formData.order,
+        sTime: this.formData.sTime,
+        eTime: this.formData.eTime
+      })
+      this.$message.success('操作成功')
+      this.dialogVisible = false
+      this.$emit('reload')
     }
   }
 }
@@ -149,18 +159,74 @@ export default {
 
 <style lang="scss" scoped>
 .dialog-container {
-  ::v-deep .el-dialog {
-    border-radius: 6px;
-    .el-dialog__header {
-      font-size: 18px;
-      text-align: center;
-      font-weight: 500;
-      background: #3182ff;
-      padding: 0;
-      line-height: 54px;
-      border-radius: 4px 4px 0px 0px;
-      .el-dialog__title {
+  .info-content {
+    display: flex;
+    padding: 15px 15px 2px;
+    .info-left {
+      margin-right: 10px;
+      .img-desc {
+        width: 160px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        font-size: 12px;
         color: #ffffff;
+        background: #7b94bc;
+        margin-top: -4px;
+      }
+    }
+    .info-middle {
+      margin-right: 10px;
+      .table-box {
+        border: 1px solid rgba(238, 238, 238, 1);
+        ul {
+          li {
+            height: 36px;
+            line-height: 36px;
+            display: flex;
+            .table-tr {
+              text-align: right;
+              width: 88px;
+              padding-right: 18px;
+              font-size: 13px;
+              color: #7a8fa8;
+              border-bottom: 1px solid rgba(238, 238, 238, 1);
+              border-right: 1px solid rgba(238, 238, 238, 1);
+            }
+            .table-td {
+              width: 366px;
+              padding-left: 18px;
+              font-size: 13px;
+              color: #4a4a4a;
+              border-bottom: 1px solid rgba(238, 238, 238, 1);
+            }
+            &:nth-last-of-type(1) {
+              height: 50px;
+              line-height: 50px;
+              .table-td {
+                line-height: 16px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .info-right {
+      width: 286px;
+      border: 1px solid rgba(238, 238, 238, 1);
+      h3 {
+        background: #fcfdff;
+        font-size: 13px;
+        color: #7a8fa8;
+        height: 36px;
+        line-height: 36px;
+        text-align: center;
+      }
+      .img-box {
+        padding: 10px 22px;
+        .el-image:nth-of-type(1) {
+          margin-bottom: 10px;
+        }
       }
     }
   }
@@ -170,19 +236,6 @@ export default {
       &:nth-of-type(1) {
         margin-right: 20px;
       }
-    }
-  }
-}
-.manage-area {
-  .el-checkbox-group {
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    padding: 10px 0 10px 30px;
-    background: #fafafa;
-    margin-top: -5px;
-    .el-checkbox {
-      width: 80px;
     }
   }
 }

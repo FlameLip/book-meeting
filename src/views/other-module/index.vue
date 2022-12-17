@@ -14,19 +14,14 @@
         :header-cell-style="headerCellStyle"
         :highlight-current-row="false"
       >
-        <el-table-column label="姓名" prop="uname" width="160" />
-        <el-table-column label="电话卡号" width="160" prop="verifyLv">
+        <el-table-column label="姓名" prop="name" />
+        <el-table-column label="电话卡号" prop="phoneCode"></el-table-column>
+        <el-table-column label="身份证号码" width="240" prop="pid">
         </el-table-column>
-        <el-table-column label="身份证号码" width="240" prop="isSafety">
-        </el-table-column>
-        <el-table-column label="关联服刑人员" prop="manageAreaStr" width="160">
-        </el-table-column>
-        <el-table-column label="关系" prop="manageAreaStr" width="160">
-        </el-table-column>
-        <el-table-column label="运营商" prop="manageAreaStr" width="160">
-        </el-table-column>
-        <el-table-column label="客户经理" prop="manageAreaStr" width="160">
-        </el-table-column>
+        <el-table-column label="关联服刑人员" prop="fxName"> </el-table-column>
+        <el-table-column label="关系" prop="relation"> </el-table-column>
+        <el-table-column label="运营商" prop="operator"> </el-table-column>
+        <el-table-column label="客户经理" prop="manager"> </el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
             <el-button size="small" type="text" @click="openDialog(scope.row)"
@@ -47,7 +42,7 @@
       >
       </el-pagination>
     </div>
-    <edit ref="detail" :rowData="rowData" />
+    <edit ref="edit" :rowData="rowData" />
   </div>
 </template>
 
@@ -93,7 +88,10 @@ export default {
     getList() {
       try {
         this.listLoading = true
-        const params = { ...this.pageOptions, prisonId: '' }
+        const params = {
+          ...this.pageOptions,
+          prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
+        }
         this.$api.getPhoneCodeWhiteList(params).then(res => {
           this.list = res.list
           this.total = res.total

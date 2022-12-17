@@ -13,7 +13,7 @@
           :inline="true"
           :model="baseForm"
         >
-          <el-form-item label="省份" prop="province">
+          <!-- <el-form-item label="省份" prop="province">
             <el-select
               style="width: 150px"
               v-model="baseForm.province"
@@ -44,12 +44,22 @@
               >
               </el-option>
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="单位" prop="prisonName">
-            <el-input
+            <el-select
+              style="width: 150px"
               v-model="baseForm.prisonName"
-              placeholder="请输入单位名称"
-            ></el-input>
+              placeholder="请选择单位"
+              @change="changePrison"
+            >
+              <el-option
+                v-for="item in prisonList"
+                :label="item.prisonName"
+                :value="item.prisonName"
+                :key="item.prisonName"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item prop="maxMeetingTimes">
             <div slot="label" class="max-label">
@@ -64,6 +74,10 @@
               :min="1"
               :max="999"
             ></el-input-number>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="openEditPrison">编辑</el-button>
+            <el-button type="primary" @click="openAddPrison">新增</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -287,6 +301,12 @@
         <el-button type="primary" @click="submit">完成</el-button>
       </div>
     </div>
+    <add
+      @addPrison="addPrison"
+      ref="addPrison"
+      :prisonData="prisonData"
+      :prisonId="prisonId"
+    />
   </div>
 </template>
 
@@ -294,6 +314,7 @@
 import { provinceList, cityList } from './data'
 import { cloneDeep } from 'lodash'
 import updateWeek from '../call-arrange/components/update-week.vue'
+import add from './components/add'
 const weekMap = {
   monday: '周一',
   tuesday: '周二',
@@ -304,7 +325,7 @@ const weekMap = {
   sunday: '周日'
 }
 export default {
-  components: { updateWeek },
+  components: { updateWeek, add },
   data() {
     const validateStartTime = (rule, value, callback) => {
       if (!value || !this.composeForm.endTime) {
@@ -319,11 +340,12 @@ export default {
       weekDay: '',
       activePage: 1,
       chooseCityList: [],
+      prisonList: [],
       baseForm: {
-        province: '广东省',
-        city: '深圳市',
-        prisonName: '深圳监狱',
-        maxMeetingTimes: '240'
+        province: '',
+        city: '',
+        prisonName: '',
+        maxMeetingTimes: 240
       },
       weekdayAreaInfo: {
         prisonId: '', // 监狱ID
@@ -453,14 +475,39 @@ export default {
       },
       areaList: [],
       composeList: [],
-      prisonId: 'gds-szs-szjy'
+      prisonId: 'gds-szs-szjy',
+      prisonData: {}
     }
   },
   mounted() {
     // this.getPrisonId()
     this.getAreaList()
+    this.getPrisonList()
   },
   methods: {
+    addPrison(val) {
+      this.prisonId = val
+      this.getPrisonList()
+    },
+    openEditPrison() {
+      this.prisonData = cloneDeep(this.baseForm)
+      this.prisonData.prisonId = this.prisonId
+      this.$refs.addPrison.dialogVisible = true
+    },
+    openAddPrison() {
+      this.prisonData = {}
+      this.$refs.addPrison.dialogVisible = true
+    },
+    changePrison(val) {
+      const item = this.prisonList.filter(item => item.prisonName === val)[0]
+      this.baseForm.city = item.city
+      this.baseForm.province = item.province
+      this.prisonId = item.prisonId
+    },
+    async getPrisonList() {
+      const res = await this.$api.getPrisonList()
+      this.prisonList = res
+    },
     async getPrisonId() {},
     async getAreaList() {
       const res = await this.$api.getAreaList({ prisonId: this.prisonId })
@@ -488,8 +535,8 @@ export default {
       this.$refs.baseForm.validate(async valid => {
         if (!valid) return
         if (!this.areaList.length) return this.$message.error('请配置监区')
-        const res = await this.$api.addPrison(this.baseForm)
-        this.prisonId = res.prisonId
+        // const res = await this.$api.addPrison(this.baseForm)
+        if (!this.prisonId) return this.$message.error('请先新增或者选择监狱')
         await this.$api.setAreaList({
           prisonId: this.prisonId,
           areaList: this.areaList

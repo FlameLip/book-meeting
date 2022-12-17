@@ -124,6 +124,17 @@
               </el-table-column>
             </el-table>
           </div>
+          <div class="pagination-container">
+            <el-pagination
+              @size-change="getHolidayConfig"
+              @current-change="getHolidayConfig"
+              :current-page.sync="pageOptions.page"
+              :page-size="pageOptions.size"
+              layout="total, prev, pager, next, jumper"
+              :total="total"
+            >
+            </el-pagination>
+          </div>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -224,7 +235,12 @@ export default {
         textAlign: 'center'
       },
       areaList: [],
-      prisonId: 'gds-szs-szjy'
+      pageOptions: {
+        page: 1,
+        pageSize: 10
+      },
+      total: 0,
+      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
     }
   },
   mounted() {
@@ -263,51 +279,46 @@ export default {
     async getHolidayConfig() {
       try {
         this.holidayLoading = true
-        // const res = await this.$api.getHolidayConfig({prisonId: ''})
-        const res = {
-          total: 100,
-          list: [
-            {
-              day: '2022.12.02',
-              type: 'rest', // 类型, work:工作, rest:休息
-              link: 'monday'
-            },
-            {
-              day: '2022.12.02',
-              type: 'work', // 类型, work:工作, rest:休息
-              link: 'tuesday'
-            },
-
-            {
-              day: '2022.12.02',
-              type: 'work', // 类型, work:工作, rest:休息
-              link: 'monday'
-            }
-          ]
-        }
+        const res = await this.$api.getHolidayConfig({
+          prisonId: this.prisonId,
+          ...this.pageOptions
+        })
         this.holidayData = res.list
+        this.total = res.total
         this.holidayData.forEach(item => this.$set(item, 'editLink', item.link))
       } finally {
         this.holidayLoading = false
       }
     },
     async setHolidayConfig(type, data) {
-      let setting = {}
+      let settings = {}
+      console.log(type)
       if (type === 'add') {
-        setting = { ...this.searchForm }
+        settings = this.searchForm.day.map(item => {
+          return {
+            day: item,
+            link: this.searchForm.link,
+            type: this.searchForm.type
+          }
+        })
         this.$refs.searchForm.validate(async valid => {
           if (!valid) return
-          await this.$api.setHolidayConfig({ prisonId: '', setting })
+          await this.$api.setHolidayConfig({
+            prisonId: this.prisonId,
+            settings
+          })
           this.$message.success('操作成功')
           this.getHolidayConfig()
         })
       } else {
-        setting = {
-          day: data.day,
-          type: data.type,
-          link: data.editLink
-        }
-        await this.$api.setHolidayConfig({ prisonId: '', setting })
+        settings = [
+          {
+            day: data.day,
+            type: data.type,
+            link: data.editLink
+          }
+        ]
+        await this.$api.setHolidayConfig({ prisonId: this.prisonId, settings })
         this.$message.success('操作成功')
         this.getHolidayConfig()
       }
@@ -318,7 +329,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        await this.$api.setHolidayConfig({ prisonId: '', day: data.day })
+        await this.$api.deleteHolidayConfig({
+          prisonId: this.prisonId,
+          day: data.day
+        })
         this.$message.success('操作成功')
         this.getHolidayConfig()
       })

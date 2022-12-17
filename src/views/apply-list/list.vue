@@ -7,11 +7,11 @@
         ref="searchForm"
         label-position="right"
       >
-        <el-form-item label="姓名" prop="fxName">
+        <el-form-item label="服刑人员姓名" prop="fxName">
           <el-input v-model="searchForm.fxName"></el-input>
         </el-form-item>
-        <el-form-item label="区域" prop="areaId">
-          <el-select v-model="searchForm.areaId">
+        <el-form-item label="区域" prop="areaName">
+          <el-select v-model="searchForm.areaName">
             <el-option label="区域一" value="shanghai"></el-option>
             <el-option label="区域二" value="beijing"></el-option>
           </el-select>
@@ -22,14 +22,18 @@
             <el-option label="不满足" :value="0"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="verifyLv">
-          <el-select v-model="searchForm.verifyLv">
-            <el-option label="满足" :value="1"></el-option>
-            <el-option label="不满足" :value="0"></el-option>
+        <el-form-item label="状态" prop="verifyStatus">
+          <el-select v-model="searchForm.verifyStatus">
+            <el-option
+              v-for="(item, index) in statusObj"
+              :label="item"
+              :key="index"
+              :value="+index"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getList">查询</el-button>
+          <el-button type="primary" @click="openDialog">查询</el-button>
           <el-button type="primary" @click="getList(true)">查询全部</el-button>
         </el-form-item>
       </el-form>
@@ -45,25 +49,22 @@
         :header-cell-style="headerCellStyle"
         :highlight-current-row="false"
       >
-        <el-table-column label="序号" width="95">
+        <!-- <el-table-column label="序号" width="95">
           <template slot-scope="scope">
             {{ scope.$index + 1 }}
           </template>
+        </el-table-column> -->
+        <el-table-column label="区域" prop="areaName" />
+        <el-table-column label="服刑人员姓名" prop="fxName"></el-table-column>
+        <el-table-column label="满足通话政策" prop="memberName">
         </el-table-column>
-        <el-table-column label="用户名" prop="uname" width="180" />
-        <el-table-column label="审核权限" width="130" prop="verifyLv">
-          <template slot-scope="scope">
-            <span>{{ verifyObj[scope.row.verifyLv] }}</span>
-          </template>
+        <el-table-column label="家属人数" prop="memberNumber">
         </el-table-column>
-        <el-table-column label="控制安全级别" width="120" prop="isSafety">
+        <el-table-column label="关系" prop="memberRelationLv1" />
+        <el-table-column label="家属号码" prop="memberPhoneCode" />
+        <el-table-column label="状态" prop="verifyStatus">
           <template slot-scope="scope">
-            {{ scope.row.isSafety ? '是' : '否' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="管理区域" prop="manageAreaStr">
-          <template slot-scope="scope">
-            {{ scope.row.manageAreaStr }}
+            {{ statusObj[scope.row.verifyStatus] || '' }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
@@ -86,25 +87,26 @@
       >
       </el-pagination>
     </div>
-    <detail ref="detail" :rowData="rowData" />
+    <detail ref="detail" :rowData="rowData" @reload="getList" />
   </div>
 </template>
 
 <script>
 import detail from './components/detail'
-import { cloneDeep } from 'lodash'
 
-const verifyObj = {
-  'verify-lv1': '初审',
-  'verify-lv2': '终审'
+const statusObj = {
+  0: '未审核',
+  1: '审核通过',
+  '-1': '审核拒绝',
+  '-2': '取消审核'
 }
 export default {
   components: { detail },
   data() {
     return {
+      statusObj,
       list: null,
       listLoading: true,
-      verifyObj,
       headerRowStyle: {
         fontSize: '13px',
         color: '#7B94BC',
@@ -131,10 +133,10 @@ export default {
       total: 0,
       searchForm: {
         fxName: '', //服刑人员姓名 空: 不配置姓名
-        areaId: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
-        isMeetingPolicy: '', // 是否满足通话政策, 字符串 all:全部, 1:满足, 0:不满足
-        verifyLv: '', // 审核状态, all:全部, 其他值为`审核权限列表`
-        isToday: 0 // 是否当日审核 0:否, 1:是
+        areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
+        verifyStatus: '',
+        isMeetingPolicy: '',
+        isToday: true
       }
     }
   },
@@ -145,13 +147,13 @@ export default {
     getList(searchAllFlag) {
       this.listLoading = true
       let params = {}
-      if (searchAllFlag) {
+      if (typeof searchAllFlag === 'boolean') {
         params = {
           fxName: '',
           areaId: '',
           isMeetingPolicy: '',
           verifyLv: '',
-          isToday: 0,
+          isToday: true,
           page: 1,
           pageSize: 10,
           prisonId: ''
@@ -160,22 +162,45 @@ export default {
         params = { ...this.pageOptions, prisonId: '', ...this.searchForm }
       }
       try {
-        this.$api.getUserList(params).then(res => {
+        this.$api.getApplyList(params).then(res => {
           this.list = res.list
           this.total = res.total
-          this.list.forEach(
-            item =>
-              (item.manageAreaStr = item.manageAreaList
-                .map(_item => _item.name)
-                .join('、'))
-          )
         })
       } finally {
         this.listLoading = false
       }
     },
     openDialog(row) {
-      this.rowData = cloneDeep(row)
+      // this.rowData = cloneDeep(row)
+      this.rowData = {
+        meetingId: 'xxxx', // 记录id
+        prisonId: 'xxxxx', // 监狱ID
+        areaName: 'xxx', // 监区名称
+        fxId: 'xxxx',
+        fxName: '张三', // 服刑人员姓名
+        fxProfilePhotoUrl: require('../../assets/bg.png'), // 头像Url
+        bindPhoneCode: 'xxxxxxx', //认证电话
+        verifyStatus: 0, // 审核状态 0:未审核, 1~9:申请阶段, -1:审核拒绝, -2:取消预约
+        verifyStatusMsg: '未审核',
+        verifyFinish: false, // 审核流程是否结束, 只针对verifyStatus:1~9的情况.
+        windowId: 1, //会见窗口ID
+        order: 1, // 会见室安排序列位
+        meetingDate: '2022.12.16',
+        startTime: '09:01',
+        endTime: '09:30',
+        members: [
+          {
+            memberPID: 'xxxxxxxx', // 身份证号
+            memberRelation: '父子', //家属关系
+            memberType: '直系亲属', //关系关型
+            censusRegister: '云南昆明', // 户籍
+            gender: '男', // 性别
+            address: 'xxxxx', // 家庭住址
+            memberPIDImgZUrl: require('../../assets/bg.png'), // 家属身份证正面url
+            memberPIDImgBUrl: require('../../assets/bg.png') // 家属身份证背面url
+          }
+        ]
+      }
       this.$refs.detail.dialogVisible = true
     }
   }

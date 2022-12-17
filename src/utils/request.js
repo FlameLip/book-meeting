@@ -49,29 +49,25 @@ service.interceptors.response.use(
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 0) {
       Message({
-        message: res.message || 'Error',
+        message: res.message || '网络错误，请稍后再试！',
         type: 'error',
-        duration: 5 * 1000
+        duration: 3 * 1000
       })
 
       // 602: Illegal token; 603: Token expired;
       if (res.code === 602 || res.code === 603) {
         // to re-login
-        MessageBox.confirm(
-          'You have been logged out, you can cancel to stay on this page, or log in again',
-          'Confirm logout',
-          {
-            confirmButtonText: 'Re-Login',
-            cancelButtonText: 'Cancel',
-            type: 'warning'
-          }
-        ).then(() => {
+        MessageBox.confirm('登录过期，请重新登录', 'Confirm logout', {
+          confirmButtonText: '重新登陆',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
           store.dispatch('user/resetToken').then(() => {
             location.reload()
           })
         })
       }
-      return Promise.reject(new Error(res.message || 'Error'))
+      return Promise.reject(new Error(res || '网络错误，请稍后再试！'))
     } else {
       return res.result
     }
@@ -79,7 +75,7 @@ service.interceptors.response.use(
   error => {
     console.log('err' + error) // for debug
     Message({
-      message: error.message,
+      message: error,
       type: 'error',
       duration: 5 * 1000
     })
