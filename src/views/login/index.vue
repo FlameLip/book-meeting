@@ -11,7 +11,7 @@
       auto-complete="on"
       label-position="left"
     >
-      <el-form-item props>
+      <!-- <el-form-item props>
         <span class="svg-container">
           <i class="el-icon-location-information"></i>
         </span>
@@ -19,7 +19,7 @@
           <el-option label="监区1" value="area1"></el-option>
           <el-option label="监区2" value="area2"></el-option>
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -91,7 +91,7 @@ export default {
     }
     return {
       loginForm: {
-        manageArea: '',
+        // manageArea: '',
         username: 'user1',
         password: '123456'
       },

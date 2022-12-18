@@ -151,7 +151,8 @@ export default {
     return {
       dialogVisible: false,
       srcList: [],
-      statusObj
+      statusObj,
+      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
     }
   },
   props: ['rowData'],
@@ -178,11 +179,11 @@ export default {
   methods: {
     async accept() {
       await this.$api.memberAccept({
-        prisonId: '', //监狱ID
+        prisonId: this.prisonId, //监狱ID
         areaName: this.rowData.areaName, //监区ID
         fxId: this.rowData.fxId, // 囚号
         fxName: this.rowData.fxName, // 服务人员姓名
-        pid: this.rowData.pid // 家属身份证号
+        pid: this.rowData.memberPID // 家属身份证号
       })
       this.$message.success('操作成功')
       this.dialogVisible = false
@@ -190,11 +191,11 @@ export default {
     },
     async reject() {
       await this.$api.memberReject({
-        prisonId: '', //监狱ID
+        prisonId: this.prisonId, //监狱ID
         areaName: this.rowData.areaName, //监区ID
         fxId: this.rowData.fxId, // 囚号
         fxName: this.rowData.fxName, // 服务人员姓名
-        pid: this.rowData.pid // 家属身份证号
+        pid: this.rowData.memberPID // 家属身份证号
       })
       this.$message.success('操作成功')
       this.dialogVisible = false

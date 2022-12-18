@@ -33,7 +33,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="openDialog">查询</el-button>
+          <el-button type="primary" @click="getList">查询</el-button>
           <el-button type="primary" @click="getList(true)">查询全部</el-button>
         </el-form-item>
       </el-form>
@@ -56,17 +56,13 @@
         </el-table-column> -->
         <el-table-column label="区域" prop="areaName" />
         <el-table-column label="服刑人员姓名" prop="fxName"></el-table-column>
-        <el-table-column label="满足通话政策" prop="memberName">
+        <el-table-column label="满足通话政策" prop="isMeetingPolicyMsg">
         </el-table-column>
         <el-table-column label="家属人数" prop="memberNumber">
         </el-table-column>
-        <el-table-column label="关系" prop="memberRelationLv1" />
+        <el-table-column label="关系" prop="memberRelation" />
         <el-table-column label="家属号码" prop="memberPhoneCode" />
-        <el-table-column label="状态" prop="verifyStatus">
-          <template slot-scope="scope">
-            {{ statusObj[scope.row.verifyStatus] || '' }}
-          </template>
-        </el-table-column>
+        <el-table-column label="状态" prop="verifyStatusMsg"> </el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
             <el-button size="small" type="text" @click="openDialog(scope.row)"
@@ -92,7 +88,7 @@
 </template>
 
 <script>
-// import detail from './components/detail'
+import detail from '../apply-list/components/detail'
 
 const statusObj = {
   0: '未审核',
@@ -101,7 +97,7 @@ const statusObj = {
   '-2': '取消审核'
 }
 export default {
-  // components: { detail },
+  components: { detail },
   data() {
     return {
       statusObj,
@@ -125,7 +121,20 @@ export default {
       cellStyle: {
         textAlign: 'center'
       },
-      rowData: {},
+      rowData: {
+        members: [
+          {
+            memberPID: 'xxxxxxxx', // 身份证号
+            memberRelation: '父子', //家属关系
+            memberType: '直系亲属', //关系关型
+            censusRegister: '云南昆明', // 户籍
+            gender: '男', // 性别
+            address: 'xxxxx', // 家庭住址
+            memberPIDImgZUrl: 'http://xxxx/xxxxx', // 家属身份证正面url
+            memberPIDImgBUrl: 'http://xxxx/xxxxx' // 家属身份证背面url
+          }
+        ]
+      },
       pageOptions: {
         page: 1,
         pageSize: 10
@@ -134,9 +143,11 @@ export default {
       searchForm: {
         fxName: '', //服刑人员姓名 空: 不配置姓名
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
-        verifyStatus: '',
-        isMeetingPolicy: ''
-      }
+        verifyStatus: -999,
+        isMeetingPolicy: '',
+        isToday: true
+      },
+      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
     }
   },
   created() {
@@ -151,23 +162,35 @@ export default {
           fxName: '',
           areaId: '',
           isMeetingPolicy: '',
-          verifyLv: '',
-          isToday: 0,
+          verifyStatus: -999,
+          isToday: true,
           page: 1,
           pageSize: 10,
-          prisonId: ''
+          prisonId: this.prisonId
         }
       } else {
-        params = { ...this.pageOptions, prisonId: '', ...this.searchForm }
+        params = {
+          ...this.pageOptions,
+          prisonId: this.prisonId,
+          ...this.searchForm
+        }
       }
       try {
-        this.$api.getHistoryList(params).then(res => {
+        this.$api.getApplyList(params).then(res => {
           this.list = res.list
           this.total = res.total
         })
       } finally {
         this.listLoading = false
       }
+    },
+    async openDialog(row) {
+      const res = await this.$api.getApplyDeteil({
+        prisonId: this.prisonId,
+        meetingId: row.meetingId
+      })
+      this.rowData = res
+      this.$refs.detail.dialogVisible = true
     }
   }
 }

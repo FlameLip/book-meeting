@@ -46,7 +46,9 @@
               </li>
               <li>
                 <div class="table-tr">户籍</div>
-                <div class="table-td">{{ rowData.members[0].verifyTime }}</div>
+                <div class="table-td">
+                  {{ rowData.members[0].censusRegister }}
+                </div>
               </li>
               <li>
                 <div class="table-tr">性别</div>
@@ -87,9 +89,43 @@
           </div>
         </div>
       </div>
+      <el-form
+        :model="formData"
+        label-width="80px"
+        style="margin: 20px 0 0 170px"
+      >
+        <el-form-item label="会见时间" prop="window">
+          <el-radio-group v-model="formData.window" :border="true" size="small">
+            <el-radio-button
+              v-for="(item, index) in windowList"
+              :label="item.label"
+              :key="index"
+            ></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="拒绝原因">
+          <el-select
+            v-model="formData.reason"
+            placeholder="请选择拒绝原因"
+            style="width: 220px"
+          >
+            <el-option
+              v-for="(item, index) in reasonList"
+              :label="item"
+              :value="item"
+              :key="index"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button type="danger" @click="reject">拒绝</el-button>
-        <el-button type="success" @click="accept">审核</el-button>
+        <el-button
+          type="success"
+          @click="accept"
+          :disabled="rowData.verifyFinish || !rowData.isUserCanVerify"
+          >审核</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -102,12 +138,18 @@ export default {
       dialogVisible: false,
       srcList: [],
       reasonList: [],
-      timeList: []
+      timeList: [],
+      formData: {
+        window: '',
+        reson: ''
+      },
+      windowList: [],
+      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
     }
   },
   props: ['rowData'],
   watch: {
-    dialogVisible(newVal) {
+    async dialogVisible(newVal) {
       if (newVal) {
         const { fxProfilePhotoUrl, members } = this.rowData
         this.srcList = [
@@ -116,38 +158,73 @@ export default {
           members[0].memberPIDImgBUrl
         ]
       }
+      // this.getApplyrRejectList()
+      await this.getUsableTimeList()
+      this.initWindow()
     }
   },
   methods: {
+    initWindow() {
+      const item = this.windowList.find(item => {
+        if (
+          this.rowData.windowId === item.windowId &&
+          this.rowData.startTime === item.startTime &&
+          this.rowData.endTime === this.rowData.endTime
+        ) {
+          return item
+        }
+      })
+      if (!item) return
+      this.formData.window = `${item.windowId} ${item.startTime}-${item.endTime} 剩余${item.orders.length}`
+    },
     async getApplyrRejectList() {
       const res = await this.$api.getApplyrRejectList()
       this.reasonList = res
     },
     async getUsableTimeList() {
-      const res = await this.$api.getUsableTimeList()
-      this.time = res
+      const res = await this.$api.getUsableTimeList({
+        prisonId: this.prisonId, //监狱ID
+        meetingId: this.rowData.meetingId,
+        meetingDate: this.rowData.meetingDate
+      })
+      const arr = []
+      res.list.forEach(item => {
+        item.timeRange.forEach(_item => {
+          arr.push({
+            windowId: item.windowId,
+            windowName: item.windowName,
+            label: `${item.windowId} ${_item.startTime}-${_item.endTime} 剩余${_item.orders.length}`,
+            ..._item
+          })
+        })
+      })
+      this.windowList = arr
     },
     async accept() {
+      if (!this.formData.window) return this.$message.error('请选择会见时间')
+      const item = this.windowList.find(
+        item => item.label === this.formData.window
+      )
       await this.$api.applyrAccept({
-        prisonId: '', //监狱ID
+        prisonId: this.prisonId, //监狱ID
+        meetingDate: this.rowData.meetingDate,
         meetingId: this.rowData.meetingId,
-        windowId: this.rowData.windowId,
-        order: this.formData.order,
-        sTime: this.formData.sTime,
-        eTime: this.formData.eTime
+        windowId: item.windowId,
+        order: item.orders[0],
+        startTime: item.startTime,
+        endTime: item.endTime
       })
       this.$message.success('操作成功')
       this.dialogVisible = false
       this.$emit('reload')
     },
     async reject() {
+      if (!this.formData.reason) return this.$message.error('请选择拒绝原因')
       await this.$api.applyrReject({
-        prisonId: '', //监狱ID
+        prisonId: this.prisonId, //监狱ID
         meetingId: this.rowData.meetingId,
-        windowId: this.rowData.windowId,
-        order: this.formData.order,
-        sTime: this.formData.sTime,
-        eTime: this.formData.eTime
+        reason: 'this.formData.reason'
+        // reason: this.formData.reason
       })
       this.$message.success('操作成功')
       this.dialogVisible = false
@@ -159,6 +236,13 @@ export default {
 
 <style lang="scss" scoped>
 .dialog-container {
+  .el-radio-button {
+    ::v-deep .el-radio-button__inner {
+      border-left: 1px solid #dcdfe6;
+      box-shadow: none;
+      border-radius: none;
+    }
+  }
   .info-content {
     display: flex;
     padding: 15px 15px 2px;
@@ -205,6 +289,12 @@ export default {
               line-height: 50px;
               .table-td {
                 line-height: 16px;
+                display: flex;
+                align-items: center;
+                border-bottom: none;
+              }
+              .table-tr {
+                border-bottom: none;
               }
             }
           }
@@ -224,11 +314,15 @@ export default {
       }
       .img-box {
         padding: 10px 22px;
+        height: 302px;
         .el-image:nth-of-type(1) {
           margin-bottom: 10px;
         }
       }
     }
+  }
+  .el-radio-button {
+    margin: 0 10px 10px 0;
   }
   .dialog-footer {
     button {

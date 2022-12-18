@@ -49,7 +49,7 @@ service.interceptors.response.use(
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 0) {
       Message({
-        message: res.message || '网络错误，请稍后再试！',
+        message: res.msg || '网络错误，请稍后再试！',
         type: 'error',
         duration: 3 * 1000
       })
@@ -67,7 +67,7 @@ service.interceptors.response.use(
           })
         })
       }
-      return Promise.reject(new Error(res || '网络错误，请稍后再试！'))
+      return Promise.reject(new Error(res.msg || '网络错误，请稍后再试！'))
     } else {
       return res.result
     }

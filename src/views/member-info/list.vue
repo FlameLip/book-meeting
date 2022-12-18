@@ -27,7 +27,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="openDialog">查询</el-button>
+          <el-button type="primary" @click="getList">查询</el-button>
           <el-button type="primary" @click="getList(true)">查询全部</el-button>
         </el-form-item>
       </el-form>
@@ -60,7 +60,7 @@
         <el-table-column label="状态" prop="verifyStatusMsg"> </el-table-column>
         <el-table-column label="审核用户" prop="verifyUser" />
         <el-table-column label="审核时间" prop="verifyTime" />
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="120">
           <template slot-scope="scope">
             <el-button size="small" type="text" @click="openDialog(scope.row)"
               >查看详情</el-button
@@ -123,11 +123,12 @@ export default {
         page: 1,
         pageSize: 10
       },
+      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001',
       total: 0,
       searchForm: {
         fxName: '', //服刑人员姓名 空: 不配置姓名
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
-        verifyStatus: ''
+        verifyStatus: -999
       }
     }
   },
@@ -141,16 +142,18 @@ export default {
       if (typeof searchAllFlag === 'boolean') {
         params = {
           fxName: '',
-          areaId: '',
-          isMeetingPolicy: '',
-          verifyLv: '',
-          isToday: 0,
+          areaName: '',
+          verifyStatus: -999,
           page: 1,
           pageSize: 10,
-          prisonId: ''
+          prisonId: this.prisonId
         }
       } else {
-        params = { ...this.pageOptions, prisonId: '', ...this.searchForm }
+        params = {
+          ...this.pageOptions,
+          prisonId: this.prisonId,
+          ...this.searchForm
+        }
       }
       try {
         this.$api.getMemberList(params).then(res => {
@@ -161,30 +164,15 @@ export default {
         this.listLoading = false
       }
     },
-    openDialog(row) {
-      // this.rowData = cloneDeep(row)
-      this.rowData = {
-        areaName: '一监区',
-        fxId: 'xxx', // 囚号
-        fxName: '张三', // 服刑人员姓名
-        fxProfilePhotoUrl: require('../../assets/bg.png'), // 服刑人员头像Url
-        memberName: '张二', // 家属姓名
-        memberProfilePhotoUrl: require('../../assets/bg.png'), //家属头像Url
-        memberRelation: '父子', // 家属关系
-        gender: '男', // 家属性别
-        memberPhoneCode: 'xxxxxxx', // 家属电话号码
-        memberPID: 'xxxxxx', // 身份号码
-        issuingAuthority: 'xxxx', // 签发机关
-        validPeriod: '2015.08.09-2035.08.09', // 有效期限
-        address: 'xxxxxxx', // 家庭住址
-        memberPIDImgZUrl: require('../../assets/bg.png'), // 家属身份证正面url
-        memberPIDImgBUrl: require('../../assets/bg.png'), // 家属身份证背面url
-        assistImgUrl: require('../../assets/bg.png'), // 辅助证明
-        verifyStatus: 0, // 审核状态, 0:未审核, 1:审核通过 -1:审核拒绝 -2:取消审核
-        verifyStatusMsg: '未审核', // 未审核, 审核通过, 审核拒绝
-        verifyUser: '管理员', // 审核用户
-        verifyTime: '2022.08.09 22:00' //审核时间
-      }
+    async openDialog(row) {
+      const res = await this.$api.getMemberDetail({
+        prisonId: this.prisonId, //监狱ID
+        areaName: row.areaName, //监区ID
+        fxName: row.fxName, //服刑人姓名
+        fxId: row.fxId, //囚号
+        memberPID: row.memberPID // 家属身份号码
+      })
+      this.rowData = res
       this.$refs.detail.dialogVisible = true
     }
   }
