@@ -71,7 +71,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-
+// TODO 1. prisonId逻辑处理 2. 登录页输入框失焦问题 3.系统设置里的逻辑优化 4. 全局下来框数据登录之后请求 5.非管理员隐藏设置和其他菜单 6. 添加一个监区选择（某个模块，searchform）
 export default {
   name: 'Login',
   data() {

@@ -7,30 +7,24 @@
         ref="searchForm"
         label-position="right"
       >
-        <el-form-item label="服刑人员姓名" prop="fxName">
+        <!-- <el-form-item label="服刑人员姓名" prop="fxName">
           <el-input v-model="searchForm.fxName"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="区域" prop="areaName">
           <el-select v-model="searchForm.areaName">
             <el-option label="区域一" value="shanghai"></el-option>
             <el-option label="区域二" value="beijing"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="通话政策" prop="isMeetingPolicy">
-          <el-select v-model="searchForm.isMeetingPolicy">
-            <el-option label="满足" :value="1"></el-option>
-            <el-option label="不满足" :value="0"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="状态" prop="verifyStatus">
-          <el-select v-model="searchForm.verifyStatus">
-            <el-option
-              v-for="(item, index) in statusObj"
-              :label="item"
-              :key="index"
-              :value="+index"
-            ></el-option>
-          </el-select>
+        <el-form-item label="日期" prop="meetingDate">
+          <el-date-picker
+            v-model="searchForm.meetingDate"
+            type="date"
+            format="yyyy.MM.dd"
+            value-format="yyyy.MM.dd"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getList">查询</el-button>
@@ -54,19 +48,34 @@
             {{ scope.$index + 1 }}
           </template>
         </el-table-column> -->
-        <el-table-column label="区域" prop="areaName" />
+        <el-table-column label="家属姓名" prop="memberName" />
         <el-table-column label="服刑人员姓名" prop="fxName"></el-table-column>
-        <el-table-column label="满足通话政策" prop="isMeetingPolicyMsg">
+        <el-table-column label="会见日期" prop="meetingDate" />
+        <el-table-column label="会见时间段" prop="startTime">
+          <template slot-scope="scope">
+            {{
+              scope.row.startTime && scope.row.endTime
+                ? scope.row.startTime + ' - ' + scope.row.endTime
+                : '待安排'
+            }}
+          </template>
         </el-table-column>
-        <el-table-column label="家属人数" prop="memberNumber">
+        <el-table-column label="会见室" prop="windowName">
+          <template slot-scope="scope">
+            {{ scope.row.windowName ? scope.row.windowName : '待安排' }}
+          </template>
         </el-table-column>
-        <el-table-column label="关系" prop="memberRelation" />
-        <el-table-column label="家属号码" prop="memberPhoneCode" />
+        <el-table-column label="排序" prop="order">
+          <template slot-scope="scope">
+            {{ scope.row.order ? scope.row.order : '待安排' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="囚号" prop="meetingId" />
         <el-table-column label="状态" prop="verifyStatusMsg"> </el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
             <el-button size="small" type="text" @click="openDialog(scope.row)"
-              >查看详情</el-button
+              >编辑</el-button
             >
           </template>
         </el-table-column>
@@ -83,24 +92,18 @@
       >
       </el-pagination>
     </div>
-    <detail ref="detail" :rowData="rowData" @reload="getList" />
+    <edit ref="edit" :rowData="rowData" @reload="getList" />
   </div>
 </template>
 
 <script>
-import detail from '../apply-list/components/detail'
+import edit from './components/edit'
+import { cloneDeep } from 'lodash'
 
-const statusObj = {
-  0: '未审核',
-  1: '审核通过',
-  '-1': '审核拒绝',
-  '-2': '取消审核'
-}
 export default {
-  components: { detail },
+  components: { edit },
   data() {
     return {
-      statusObj,
       list: null,
       listLoading: true,
       headerRowStyle: {
@@ -121,36 +124,21 @@ export default {
       cellStyle: {
         textAlign: 'center'
       },
-      rowData: {
-        members: [
-          {
-            memberPID: 'xxxxxxxx', // 身份证号
-            memberRelation: '父子', //家属关系
-            memberType: '直系亲属', //关系关型
-            censusRegister: '云南昆明', // 户籍
-            gender: '男', // 性别
-            address: 'xxxxx', // 家庭住址
-            memberPIDImgZUrl: 'http://xxxx/xxxxx', // 家属身份证正面url
-            memberPIDImgBUrl: 'http://xxxx/xxxxx' // 家属身份证背面url
-          }
-        ]
-      },
+      rowData: {},
       pageOptions: {
         page: 1,
         pageSize: 10
       },
       total: 0,
       searchForm: {
-        fxName: '', //服刑人员姓名 空: 不配置姓名
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
-        verifyStatus: '',
-        isMeetingPolicy: '',
-        isToday: true
+        meetingDate: '2022.12.21'
       },
       prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
     }
   },
   created() {
+    // TODO 搜索需要valid
     this.getList()
   },
   methods: {
@@ -159,11 +147,8 @@ export default {
       let params = {}
       if (typeof searchAllFlag === 'boolean') {
         params = {
-          fxName: '',
-          areaId: '',
-          isMeetingPolicy: '',
-          verifyStatus: '',
-          isToday: true,
+          areaName: '',
+          meetingDate: '2022.12.21',
           page: 1,
           pageSize: 10,
           prisonId: this.prisonId
@@ -176,7 +161,7 @@ export default {
         }
       }
       try {
-        this.$api.getApplyList(params).then(res => {
+        this.$api.getMettingArrangeList(params).then(res => {
           this.list = res.list
           this.total = res.total
         })
@@ -185,12 +170,8 @@ export default {
       }
     },
     async openDialog(row) {
-      const res = await this.$api.getApplyDeteil({
-        prisonId: this.prisonId,
-        meetingId: row.meetingId
-      })
-      this.rowData = res
-      this.$refs.detail.dialogVisible = true
+      this.rowData = cloneDeep(row)
+      this.$refs.edit.dialogVisible = true
     }
   }
 }
@@ -208,6 +189,9 @@ export default {
       .el-form-item__label {
         font-weight: 600;
         font-size: 13px;
+      }
+      .el-date-editor {
+        width: 160px;
       }
       .el-input__inner {
         height: 28px;

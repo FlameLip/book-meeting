@@ -56,6 +56,19 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/meettingArrange',
+    component: Layout,
+    redirect: '/meettingArrange',
+    children: [
+      {
+        path: '',
+        name: 'meettingArrange',
+        component: () => import('@/views/meetting-arrange/list'),
+        meta: { title: '会见排班', icon: 'el-icon-s-check' }
+      }
+    ]
+  },
 
   {
     path: '/applyList',
@@ -63,7 +76,7 @@ export const constantRoutes = [
     redirect: '/applyList',
     children: [
       {
-        path: 'applyList',
+        path: '',
         name: 'applyList',
         component: () => import('@/views/apply-list/list'),
         meta: { title: '申请列表', icon: 'el-icon-document' }
@@ -77,7 +90,7 @@ export const constantRoutes = [
     redirect: '/auditList',
     children: [
       {
-        path: 'auditList',
+        path: '',
         name: 'auditList',
         component: () => import('@/views/audit-list/list'),
         meta: { title: '当日审核列表', icon: 'el-icon-document-checked' }
@@ -91,7 +104,7 @@ export const constantRoutes = [
     redirect: '/callLog',
     children: [
       {
-        path: 'callLog',
+        path: '',
         name: 'callLog',
         component: () => import('@/views/call-log/list'),
         meta: { title: '通话记录查询', icon: 'el-icon-phone-outline' }
@@ -105,7 +118,7 @@ export const constantRoutes = [
     redirect: '/memberInfo',
     children: [
       {
-        path: 'memberInfo',
+        path: '',
         name: 'memberInfo',
         component: () => import('@/views/member-info/list'),
         meta: { title: '家属信息查询', icon: 'el-icon-info' }
@@ -133,7 +146,7 @@ export const constantRoutes = [
     redirect: '/meettingPolicy',
     children: [
       {
-        path: 'meettingPolicy',
+        path: '',
         name: 'meettingPolicy',
         component: () => import('@/views/meetting-policy/list'),
         meta: { title: '会见政策', icon: 'el-icon-s-custom' }
@@ -147,7 +160,7 @@ export const constantRoutes = [
     redirect: '/callArrange',
     children: [
       {
-        path: 'callArrange',
+        path: '',
         name: 'callArrange',
         component: () => import('@/views/call-arrange/list'),
         meta: { title: '通话日安排', icon: 'el-icon-mobile-phone' }
@@ -161,7 +174,7 @@ export const constantRoutes = [
     redirect: '/systemSetting',
     children: [
       {
-        path: 'systemSetting',
+        path: '',
         name: 'systemSetting',
         component: () => import('@/views/system-setting/index'),
         meta: { title: '系统配置', icon: 'el-icon-setting' }
@@ -175,7 +188,7 @@ export const constantRoutes = [
     redirect: '/otherModule',
     children: [
       {
-        path: 'otherModule',
+        path: '',
         name: 'otherModule',
         component: () => import('@/views/other-module/index'),
         meta: { title: '其他', icon: 'el-icon-more' }

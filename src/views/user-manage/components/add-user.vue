@@ -14,31 +14,36 @@
         label-position="left"
         :rules="rules"
       >
-        <el-form-item label="用户名：" prop="uname">
+        <el-form-item label="用户名" prop="uname">
           <el-input
             style="width: 220px"
             v-model="formData.uname"
             placeholder="请输入用户名"
+            :disabled="type === 'edit'"
           ></el-input>
         </el-form-item>
-        <el-form-item label="登录密码：" prop="passwd">
+        <el-form-item label="登录密码" prop="passwd" :required="type === 'add'">
           <el-input
             style="width: 220px"
             v-model="formData.passwd"
             placeholder="请输入登录密码"
           ></el-input>
         </el-form-item>
-        <el-form-item label="审核权限：" prop="verifyLv">
+        <el-form-item label="审核权限" prop="verifyStep">
           <el-select
-            v-model="formData.verifyLv"
+            v-model="formData.verifyStep"
             placeholder="请选择审核权限"
             style="width: 220px"
           >
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+            <el-option
+              v-for="item in verifyList"
+              :label="item.label"
+              :key="item.value"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="控制安全级别：" prop="isSafety">
+        <el-form-item label="控制安全级别" prop="isSafety">
           <el-select
             v-model="formData.isSafety"
             placeholder="请选择控制安全级别"
@@ -49,16 +54,16 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          label="管理区域："
+          label="管理区域"
           prop="manageAreaList"
           class="manage-area"
         >
           <el-checkbox-group v-model="formData.manageAreaList">
             <el-checkbox
-              v-for="item in 20"
+              v-for="item in areaList"
               :key="item"
-              :label="'监区' + item"
-              name="manageAreaList"
+              :label="item"
+              :name="item"
             ></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
@@ -77,13 +82,10 @@ export default {
     return {
       rules: {
         uname: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
+          { required: true, message: '请输入用户名称', trigger: 'change' },
           { min: 3, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
         ],
-        passwd: [
-          { required: true, message: '请填写登录密码', trigger: 'blur' }
-        ],
-        verifyLv: [
+        verifyStep: [
           { required: true, message: '请选择审核权限', trigger: 'change' }
         ],
         isSafety: [
@@ -105,20 +107,25 @@ export default {
       formData: {
         uname: '',
         passwd: '',
-        verifyLv: '',
+        verifyStep: '',
         isSafety: '', // false/true
         manageAreaList: []
       },
       dialogVisible: false,
-      title: '添加用户'
+      title: '添加用户',
+      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001',
+      verifyList: [],
+      areaList: []
     }
   },
   props: ['rowData'],
   watch: {
-    dialogVisible(newVal) {
+    async dialogVisible(newVal) {
       if (newVal) {
         this.initData()
-        if (Object.keys(this.rowData).length) {
+        this.getAreaList()
+        this.getVerifyList()
+        if (this.type === 'edit') {
           this.formData = this.rowData
           this.title = '修改用户'
         } else {
@@ -127,22 +134,49 @@ export default {
       }
     }
   },
+  computed: {
+    type() {
+      return Object.keys(this.rowData).length ? 'edit' : 'add'
+    }
+  },
   methods: {
+    async getAreaList() {
+      const res = await this.$api.getAreaList({ prisonId: this.prisonId })
+      this.areaList = res.map(item => item.name)
+    },
+    async getVerifyList() {
+      const res = await this.$api.getVerifyList({ prisonId: this.prisonId })
+      this.verifyList = res.map(item => {
+        return {
+          value: item.step,
+          label: item.name
+        }
+      })
+    },
     initData() {
       this.formData = {
         uname: '',
         passwd: '',
-        verifyLv: '',
+        verifyStep: '',
         isSafety: '', // false/true
         manageAreaList: []
       }
       this.title = '添加用户'
     },
     submit() {
-      console.log(this.formData)
-      this.$refs.addUser.validate(valid => {
+      this.$refs.addUser.validate(async valid => {
         if (!valid) return
-        console.log('submit!')
+        let instance = ''
+        if (this.type === 'edit') {
+          this.formData = this.rowData
+          instance = this.$api.modifyUser
+        } else {
+          instance = this.$api.addUser
+        }
+        await instance({ ...this.formData, prisonId: this.prisonId })
+        this.$message.success('操作成功')
+        this.$emit('reload')
+        this.dialogVisible = false
       })
     },
     close() {

@@ -128,7 +128,7 @@ export default {
       searchForm: {
         fxName: '', //服刑人员姓名 空: 不配置姓名
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
-        verifyStatus: -999
+        verifyStatus: ''
       }
     }
   },
@@ -143,7 +143,7 @@ export default {
         params = {
           fxName: '',
           areaName: '',
-          verifyStatus: -999,
+          verifyStatus: '',
           page: 1,
           pageSize: 10,
           prisonId: this.prisonId

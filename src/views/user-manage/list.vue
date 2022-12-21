@@ -23,10 +23,7 @@
           </template>
         </el-table-column>
         <el-table-column label="用户名" prop="uname" width="180" />
-        <el-table-column label="审核权限" width="130" prop="verifyLv">
-          <template slot-scope="scope">
-            <span>{{ verifyObj[scope.row.verifyLv] }}</span>
-          </template>
+        <el-table-column label="审核权限" width="130" prop="verifyStepName">
         </el-table-column>
         <el-table-column label="控制安全级别" width="120" prop="isSafety">
           <template slot-scope="scope">
@@ -61,7 +58,7 @@
       >
       </el-pagination>
     </div>
-    <add-user ref="addUser" :rowData="rowData" />
+    <add-user ref="addUser" @reload="getList" :rowData="rowData" />
   </div>
 </template>
 
@@ -103,7 +100,8 @@ export default {
         page: 1,
         pageSize: 10
       },
-      total: 0
+      total: 0,
+      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
     }
   },
   created() {
@@ -113,15 +111,12 @@ export default {
     getList() {
       try {
         this.listLoading = true
-        let params = { ...this.pageOptions, prisonId: '' }
+        let params = { ...this.pageOptions, prisonId: this.prisonId }
         this.$api.getUserList(params).then(res => {
           this.list = res.list
           this.total = res.total
           this.list.forEach(
-            item =>
-              (item.manageAreaStr = item.manageAreaList
-                .map(_item => _item.name)
-                .join('、'))
+            item => (item.manageAreaStr = item.manageAreaList.join('、'))
           )
         })
       } finally {
@@ -142,7 +137,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        await this.$api.deleteUser({ uname: row.uname })
+        await this.$api.deleteUser({
+          uname: row.uname,
+          prisonId: this.prisonId
+        })
         this.$message.success('删除成功!')
         this.getList()
       })

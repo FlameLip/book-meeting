@@ -157,10 +157,10 @@ export default {
           members[0].memberPIDImgZUrl,
           members[0].memberPIDImgBUrl
         ]
+        // this.getApplyrRejectList()
+        await this.getUsableTimeList()
+        this.initWindow()
       }
-      // this.getApplyrRejectList()
-      await this.getUsableTimeList()
-      this.initWindow()
     }
   },
   methods: {
@@ -169,7 +169,7 @@ export default {
         if (
           this.rowData.windowId === item.windowId &&
           this.rowData.startTime === item.startTime &&
-          this.rowData.endTime === this.rowData.endTime
+          this.rowData.endTime === item.endTime
         ) {
           return item
         }
