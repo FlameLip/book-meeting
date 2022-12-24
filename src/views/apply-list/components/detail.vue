@@ -161,7 +161,7 @@ export default {
           members[0].memberPIDImgZUrl,
           members[0].memberPIDImgBUrl
         ]
-        // this.getApplyrRejectList()
+        this.getApplyrRejectList()
         await this.getUsableTimeList()
         this.initWindow()
       }
@@ -182,7 +182,9 @@ export default {
       this.formData.window = `${item.windowId} ${item.startTime}-${item.endTime} 剩余${item.orders.length}`
     },
     async getApplyrRejectList() {
-      const res = await this.$api.getApplyrRejectList()
+      const res = await this.$api.getApplyrRejectList({
+        prisonId: this.prisonId
+      })
       this.reasonList = res
     },
     async getUsableTimeList() {

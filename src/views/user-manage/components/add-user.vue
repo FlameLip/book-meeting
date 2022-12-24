@@ -117,11 +117,6 @@ export default {
       areaList: []
     }
   },
-  computed: {
-    prisonId() {
-      return sessionStorage.getItem('prisonId')
-    }
-  },
   props: ['rowData'],
   watch: {
     async dialogVisible(newVal) {
@@ -141,6 +136,9 @@ export default {
   computed: {
     type() {
       return Object.keys(this.rowData).length ? 'edit' : 'add'
+    },
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
     }
   },
   methods: {
