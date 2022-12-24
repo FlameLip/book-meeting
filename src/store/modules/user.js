@@ -1,3 +1,9 @@
+/*
+ * @Descripttion:
+ * @Version: 1.0
+ * @Author: FlameLip 18070568168@163.com
+ * @Date: 2022-12-01 16:00:19
+ */
 import { login, logout, getInfo } from '@/api/modules/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
@@ -35,6 +41,8 @@ const actions = {
       login({ uname: username.trim(), passwd: password, vcode: '' })
         .then(response => {
           commit('SET_TOKEN', response.token)
+          sessionStorage.setItem('prisonId', response.prisonId)
+          sessionStorage.setItem('userInfo', JSON.stringify(response))
           setToken(response.token)
           resolve()
         })

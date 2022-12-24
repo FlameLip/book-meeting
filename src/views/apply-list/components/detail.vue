@@ -143,8 +143,12 @@ export default {
         window: '',
         reson: ''
       },
-      windowList: [],
-      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
+      windowList: []
+    }
+  },
+  computed: {
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
     }
   },
   props: ['rowData'],

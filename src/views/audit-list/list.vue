@@ -146,12 +146,16 @@ export default {
         verifyStatus: '',
         isMeetingPolicy: '',
         isToday: true
-      },
-      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
+      }
     }
   },
   created() {
     this.getList()
+  },
+  computed: {
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
+    }
   },
   methods: {
     getList(searchAllFlag) {

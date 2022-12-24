@@ -303,9 +303,11 @@
     </div>
     <add
       @addPrison="addPrison"
+      @reload="getPrisonList"
       ref="addPrison"
       :prisonData="prisonData"
       :prisonId="prisonId"
+      :maxMeetingTimes="baseForm.maxMeetingTimes"
     />
   </div>
 </template>
@@ -361,17 +363,17 @@ export default {
       },
       areaForm: {
         name: '',
-        windowNums: 1
+        windowNums: ''
       },
       callForm: {
-        timesPerMonth: 4, // 每月视频通话次数
-        numberPerMeeting: 3, // 每次通话人数
-        minutePerMeeting: 30 // 每次通话时长(分钟)
+        timesPerMonth: '', // 每月视频通话次数
+        numberPerMeeting: '', // 每次通话人数
+        minutePerMeeting: '' // 每次通话时长(分钟)
       },
       composeForm: {
         startTime: '', // 开始时间
         endTime: '', // 结束时间
-        meetingTimes: 1 // 通话次数
+        meetingTimes: '' // 通话次数
       },
       baseRules: {
         province: [
@@ -475,19 +477,28 @@ export default {
       },
       areaList: [],
       composeList: [],
-      prisonId: 'gds-szs-szjy',
-      prisonData: {}
+      prisonData: {},
+      prisonId: ''
+    }
+  },
+  computed: {
+    userInfo() {
+      return JSON.parse(sessionStorage.getItem('userInfo'))
     }
   },
   mounted() {
-    // this.getPrisonId()
-    this.getAreaList()
+    this.initData()
     this.getPrisonList()
+    this.getAreaList()
   },
   methods: {
-    addPrison(val) {
-      this.prisonId = val
-      this.getPrisonList()
+    async addPrison(val) {
+      await this.getPrisonList()
+      const data = this.prisonList.find(item => item.prisonId === val)
+      this.baseForm.city = data.city
+      this.baseForm.province = data.province
+      this.baseForm.maxMeetingTimes = data.maxMeetingTimes
+      this.baseForm.prisonName = data.prisonName
     },
     openEditPrison() {
       this.prisonData = cloneDeep(this.baseForm)
@@ -499,16 +510,20 @@ export default {
       this.$refs.addPrison.dialogVisible = true
     },
     changePrison(val) {
-      const item = this.prisonList.filter(item => item.prisonName === val)[0]
+      const item = this.prisonList.find(item => item.prisonName === val)
       this.baseForm.city = item.city
       this.baseForm.province = item.province
+      this.baseForm.maxMeetingTimes = item.maxMeetingTimes
       this.prisonId = item.prisonId
+      this.getAreaList()
     },
     async getPrisonList() {
       const res = await this.$api.getPrisonList()
       this.prisonList = res
     },
-    async getPrisonId() {},
+    async initData() {
+      this.prisonId = this.userInfo.prisonId
+    },
     async getAreaList() {
       const res = await this.$api.getAreaList({ prisonId: this.prisonId })
       this.areaList = res

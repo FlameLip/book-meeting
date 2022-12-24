@@ -239,8 +239,12 @@ export default {
         page: 1,
         pageSize: 10
       },
-      total: 0,
-      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
+      total: 0
+    }
+  },
+  computed: {
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
     }
   },
   mounted() {

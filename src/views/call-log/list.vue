@@ -140,6 +140,11 @@ export default {
   created() {
     this.getList()
   },
+  computed: {
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
+    }
+  },
   methods: {
     getList(searchAllFlag) {
       let params = {}
@@ -151,10 +156,14 @@ export default {
           verifyLv: '',
           page: 1,
           pageSize: 10,
-          prisonId: ''
+          prisonId: this.prisonId
         }
       } else {
-        params = { ...this.pageOptions, prisonId: '', ...this.searchForm }
+        params = {
+          ...this.pageOptions,
+          prisonId: this.prisonId,
+          ...this.searchForm
+        }
       }
       try {
         this.$api.getMemberList(params).then(res => {

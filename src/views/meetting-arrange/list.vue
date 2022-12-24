@@ -133,8 +133,12 @@ export default {
       searchForm: {
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
         meetingDate: '2022.12.21'
-      },
-      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
+      }
+    }
+  },
+  computed: {
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
     }
   },
   created() {

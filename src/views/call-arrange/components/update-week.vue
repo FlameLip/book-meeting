@@ -1,3 +1,9 @@
+<!--
+ * @Descripttion:
+ * @Version: 1.0
+ * @Author: FlameLip 18070568168@163.com
+ * @Date: 2022-12-23 23:59:29
+-->
 <template>
   <el-dialog
     title=""
@@ -58,7 +64,7 @@ export default {
   },
   methods: {
     handleCheckAllChange(val) {
-      this.checkedArea = val ? val : []
+      this.checkedArea = val ? this.manageAreaList : []
       this.isIndeterminate = false
     },
     handleCheckedAreaChange(value) {

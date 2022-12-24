@@ -123,13 +123,17 @@ export default {
         page: 1,
         pageSize: 10
       },
-      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001',
       total: 0,
       searchForm: {
         fxName: '', //服刑人员姓名 空: 不配置姓名
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
         verifyStatus: ''
       }
+    }
+  },
+  computed: {
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
     }
   },
   created() {

@@ -84,13 +84,18 @@ export default {
   created() {
     this.getList()
   },
+  computed: {
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
+    }
+  },
   methods: {
     getList() {
       try {
         this.listLoading = true
         const params = {
           ...this.pageOptions,
-          prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
+          prisonId: this.prisonId
         }
         this.$api.getPhoneCodeWhiteList(params).then(res => {
           this.list = res.list

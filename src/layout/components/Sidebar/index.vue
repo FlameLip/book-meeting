@@ -1,3 +1,9 @@
+<!--
+ * @Descripttion:
+ * @Version: 1.0
+ * @Author: FlameLip 18070568168@163.com
+ * @Date: 2022-12-01 16:00:19
+-->
 <template>
   <div :class="{ 'has-logo': showLogo }">
     <el-scrollbar wrap-class="scrollbar-wrapper">
@@ -26,7 +32,6 @@
 import { mapGetters } from 'vuex'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
-
 export default {
   components: { SidebarItem },
   computed: {

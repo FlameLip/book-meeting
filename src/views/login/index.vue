@@ -34,7 +34,6 @@
           auto-complete="on"
         />
       </el-form-item>
-
       <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password" />
@@ -56,7 +55,6 @@
           />
         </span>
       </el-form-item>
-
       <el-button
         :loading="loading"
         type="primary"
@@ -71,13 +69,13 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-// TODO 1. prisonId逻辑处理 2. 登录页输入框失焦问题 3.系统设置里的逻辑优化 4. 全局下来框数据登录之后请求 5.非管理员隐藏设置和其他菜单 6. 添加一个监区选择（某个模块，searchform）
+// TODO 6. 添加一个监区选择（某个模块，searchform）
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入用户名'))
       } else {
         callback()
       }
@@ -92,8 +90,9 @@ export default {
     return {
       loginForm: {
         // manageArea: '',
-        username: 'user1',
-        password: '123456'
+        username: '',
+        password: '',
+        vcode: ''
       },
       loginRules: {
         // username: [
@@ -183,7 +182,7 @@ $cursor: #fff;
       padding: 12px 5px 12px 15px;
       color: $light_gray;
       height: 47px;
-      caret-color: $cursor;
+      // caret-color: $cursor;
 
       &:-webkit-autofill {
         box-shadow: 0 0 0px 1000px $bg inset !important;

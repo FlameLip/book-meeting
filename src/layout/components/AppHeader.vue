@@ -1,3 +1,9 @@
+<!--
+ * @Descripttion:
+ * @Version: 1.0
+ * @Author: FlameLip 18070568168@163.com
+ * @Date: 2022-12-05 15:49:21
+-->
 <template>
   <div class="navbar">
     <div class="title-container">
@@ -6,7 +12,7 @@
     </div>
     <div class="right-menu">
       <img src="../../assets/avatar.png" alt="" />
-      <span>管理员</span>
+      <span>{{ userInfo.isSuper ? '管理员' : userInfo.uname }}</span>
       <span class="Separation"></span>
       <span @click="logout" style="cursor: pointer">退出</span>
     </div>
@@ -16,6 +22,11 @@
 <script>
 export default {
   name: 'AppHeader',
+  computed: {
+    userInfo() {
+      return JSON.parse(sessionStorage.getItem('userInfo'))
+    }
+  },
   methods: {
     async logout() {
       await this.$store.dispatch('user/logout')

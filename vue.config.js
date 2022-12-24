@@ -1,5 +1,6 @@
 'use strict'
 const path = require('path')
+const fs = require('fs')
 const defaultSettings = require('./src/settings.js')
 
 function resolve(dir) {
@@ -32,14 +33,22 @@ module.exports = {
   devServer: {
     port: port,
     open: true,
+    // https: {
+    //   key: fs.readFileSync(
+    //     path.resolve(__dirname, './https/120.79.53.240-key.pem')
+    //   ),
+    //   cert: fs.readFileSync(
+    //     path.resolve(__dirname, './https/120.79.53.240.pem')
+    //   )
+    // },
     overlay: {
       warnings: false,
       errors: true
     },
     proxy: {
-      '/booking': {
+      '/api': {
         target: 'http://120.79.53.240:8090', // 将 '/api' 代理为 'http://www.baidu.com:8000/api'
-        pathRewrite: { '^/booking': '' }, // 'http://www.baidu.com:8000/api' 重写为 'http://www.baidu.com:8000/'
+        pathRewrite: { '^/api': '' }, // 'http://www.baidu.com:8000/api' 重写为 'http://www.baidu.com:8000/'
         changeOrigin: true, // 代理时不显示主机头的真实来源
         secure: false // 不验证 https 证书
       }

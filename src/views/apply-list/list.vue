@@ -146,8 +146,12 @@ export default {
         verifyStatus: '',
         isMeetingPolicy: '',
         isToday: false
-      },
-      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
+      }
+    }
+  },
+  computed: {
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
     }
   },
   created() {

@@ -46,7 +46,7 @@ export default {
       title: '新增单位'
     }
   },
-  props: ['prisonData', 'prisonId'],
+  props: ['prisonData', 'prisonId', 'maxMeetingTimes'],
   watch: {
     dialogVisible(newVal) {
       this.formData = {
@@ -71,13 +71,12 @@ export default {
             ...this.formData,
             province: '',
             city: '',
-            maxMeetingTimes: 0
+            maxMeetingTimes: this.maxMeetingTimes
           })
-          this.$emit('addPrison', res.prisonId)
+          this.$emit('reload')
           this.$message.success('操作成功')
           this.dialogVisible = false
         } else {
-          console.log(this.formData)
           const res = await this.$api.editPrison({
             ...this.formData,
             prisonId: this.prisonId

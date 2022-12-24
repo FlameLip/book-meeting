@@ -96,8 +96,12 @@ export default {
       mettingTimeList: [],
       windowNameList: [],
       orderList: [],
-      dialogVisible: false,
-      prisonId: 'p-1ed1126e-7b61-11ed-8001-000000000001'
+      dialogVisible: false
+    }
+  },
+  computed: {
+    prisonId() {
+      return sessionStorage.getItem('prisonId')
     }
   },
   props: ['rowData'],
