@@ -544,7 +544,7 @@ export default {
       })
     },
     handleAreaClose(index) {
-      this.areaList.spilce(index, 1)
+      this.areaList.splice(index, 1)
     },
     nextStep() {
       this.$refs.baseForm.validate(async valid => {

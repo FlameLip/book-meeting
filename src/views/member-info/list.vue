@@ -11,13 +11,17 @@
           <el-input v-model="searchForm.fxName"></el-input>
         </el-form-item>
         <el-form-item label="区域" prop="areaName">
-          <el-select v-model="searchForm.areaName">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="searchForm.areaName" clearable>
+            <el-option
+              v-for="item in areaList"
+              :key="item.name"
+              :label="item.name"
+              :value="item.name"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="verifyStatus">
-          <el-select v-model="searchForm.verifyStatus">
+          <el-select v-model="searchForm.verifyStatus" clearable>
             <el-option
               v-for="(item, index) in statusObj"
               :label="item"
@@ -128,7 +132,8 @@ export default {
         fxName: '', //服刑人员姓名 空: 不配置姓名
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
         verifyStatus: ''
-      }
+      },
+      areaList: []
     }
   },
   computed: {
@@ -138,8 +143,13 @@ export default {
   },
   created() {
     this.getList()
+    this.getAreaList()
   },
   methods: {
+    async getAreaList() {
+      const res = await this.$api.getAreaList({ prisonId: this.prisonId })
+      this.areaList = res
+    },
     getList(searchAllFlag) {
       this.listLoading = true
       let params = {}

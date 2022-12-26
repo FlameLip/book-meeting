@@ -11,9 +11,13 @@
           <el-input v-model="searchForm.fxName"></el-input>
         </el-form-item> -->
         <el-form-item label="区域" prop="areaName">
-          <el-select v-model="searchForm.areaName">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="searchForm.areaName" clearable>
+            <el-option
+              v-for="item in areaList"
+              :key="item.name"
+              :label="item.name"
+              :value="item.name"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="日期" prop="meetingDate">
@@ -133,7 +137,8 @@ export default {
       searchForm: {
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
         meetingDate: '2022.12.21'
-      }
+      },
+      areaList: []
     }
   },
   computed: {
@@ -144,8 +149,13 @@ export default {
   created() {
     // TODO 搜索需要valid
     this.getList()
+    this.getAreaList()
   },
   methods: {
+    async getAreaList() {
+      const res = await this.$api.getAreaList({ prisonId: this.prisonId })
+      this.areaList = res
+    },
     getList(searchAllFlag) {
       this.listLoading = true
       let params = {}
