@@ -546,6 +546,9 @@ export default {
     handleAreaClose(index) {
       this.areaList.splice(index, 1)
     },
+    handleComposeClose(index) {
+      this.composeList.splice(index, 1)
+    },
     nextStep() {
       this.$refs.baseForm.validate(async valid => {
         if (!valid) return
