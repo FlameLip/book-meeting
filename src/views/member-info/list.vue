@@ -7,6 +7,17 @@
         ref="searchForm"
         label-position="right"
       >
+        <el-form-item label="单位" prop="prisonName">
+          <el-select v-model="searchForm.prisonName">
+            <el-option
+              v-for="item in prisonList"
+              :label="item.prisonName"
+              :value="item.prisonName"
+              :key="item.prisonName"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="服刑人员姓名" prop="fxName">
           <el-input v-model="searchForm.fxName"></el-input>
         </el-form-item>
@@ -31,10 +42,39 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getList">查询</el-button>
-          <el-button type="primary" @click="getList(true)">查询全部</el-button>
+          <el-button type="primary" @click="getTableList">查询</el-button>
+          <el-button type="primary" @click="getTableList(true)"
+            >查询全部</el-button
+          >
         </el-form-item>
       </el-form>
+    </div>
+    <div class="upload-box">
+      <el-upload
+        :action="uploadUrl"
+        :data="extraParams"
+        :headers="uploadHeader"
+        :before-upload="handleBeforeUpload"
+        :show-file-list="false"
+        :on-success="handleUploadSuccess"
+      >
+        <el-button size="small" type="primary">点击上传</el-button>
+      </el-upload>
+
+      <el-button
+        size="small"
+        type="danger"
+        @click="bacthDelete"
+        :disabled="multipleSelection.length === 0"
+        >批量删除</el-button
+      >
+      <el-button
+        size="small"
+        type="warning"
+        @click="bacthAudit"
+        :disabled="multipleSelection.length === 0"
+        >批量审核</el-button
+      >
     </div>
     <div class="table-container">
       <el-table
@@ -46,12 +86,14 @@
         :header-row-style="headerRowStyle"
         :header-cell-style="headerCellStyle"
         :highlight-current-row="false"
+        @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column label="序号" width="95">
           <template slot-scope="scope">
             {{ scope.$index + 1 }}
           </template>
         </el-table-column> -->
+        <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column label="区域" prop="areaName" />
         <el-table-column label="服刑人员姓名" prop="fxName"></el-table-column>
         <el-table-column label="家属姓名" prop="memberName"> </el-table-column>
@@ -75,8 +117,8 @@
     </div>
     <div class="pagination-container">
       <el-pagination
-        @size-change="getList"
-        @current-change="getList"
+        @size-change="getTableList"
+        @current-change="getTableList"
         :current-page.sync="pageOptions.page"
         :page-size="pageOptions.size"
         layout="total, prev, pager, next, jumper"
@@ -84,13 +126,14 @@
       >
       </el-pagination>
     </div>
-    <detail ref="detail" :rowData="rowData" @reload="getList" />
+    <detail ref="detail" :rowData="rowData" @reload="getTableList" />
   </div>
 </template>
 
 <script>
 import detail from './components/detail'
-
+import { getToken } from '@/utils/auth'
+// todo 上传没加token 接口返回需求token， 加了token反而变成404了
 const statusObj = {
   0: '未审核',
   1: '审核通过',
@@ -129,28 +172,99 @@ export default {
       },
       total: 0,
       searchForm: {
+        prisonName: '',
         fxName: '', //服刑人员姓名 空: 不配置姓名
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
         verifyStatus: ''
       },
-      areaList: []
+      areaList: [],
+      prisonList: [],
+      extraParams: {
+        prisonId: sessionStorage.getItem('prisonId'),
+        isHaveOperatorManager: false,
+        excel: ''
+      },
+      uploadUrl: process.env.VUE_APP_BASE_API + '/upload/upload-excel',
+      uploadHeader: {
+        Authorization: 'Bearer ' + getToken()
+      },
+      multipleSelection: []
     }
   },
   computed: {
     prisonId() {
       return sessionStorage.getItem('prisonId')
+    },
+    userInfo() {
+      return JSON.parse(sessionStorage.getItem('userInfo'))
     }
   },
   created() {
-    this.getList()
+    this.getTableList()
     this.getAreaList()
+    this.getPrisonList()
   },
   methods: {
+    bacthDelete() {
+      const pids = this.multipleSelection.map(item => item.memberPID)
+      this.$confirm('此操作将批量删除选中数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        await this.$api.memberDelete({
+          pid: pids,
+          prisonId: this.prisonId,
+          fxId: ''
+        })
+        this.$message.success('操作成功')
+        this.getTableList()
+      })
+    },
+    bacthAudit() {
+      const pids = this.multipleSelection.map(item => item.memberPID)
+      this.$confirm('此操作将批量审核选中数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        await this.$api.memberAccept({ pid: pids })
+        this.$message.success('操作成功')
+        this.getTableList()
+      })
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    async getPrisonList() {
+      const res = await this.$api.getPrisonList()
+      this.prisonList = res
+    },
+    handleBeforeUpload(file) {
+      this.extraParams.excel = file
+    },
+    handleUploadSuccess(res) {
+      if (res.code === 0) {
+        const result = res.result
+        if (result.failed.length !== 0) {
+          let str = `共上传${result.total}条数据，成功${result.success}条，其中<br/>`
+          str = str + result.failed.join('<br/>')
+          return this.$message({
+            dangerouslyUseHTMLString: true,
+            message: str,
+            type: 'warning'
+          })
+        }
+        this.$message.success('上传成功')
+      } else {
+        this.$message.error(res.msg)
+      }
+    },
     async getAreaList() {
       const res = await this.$api.getAreaList({ prisonId: this.prisonId })
       this.areaList = res
     },
-    getList(searchAllFlag) {
+    getTableList(searchAllFlag) {
       this.listLoading = true
       let params = {}
       if (typeof searchAllFlag === 'boolean') {
@@ -194,6 +308,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.upload-box {
+  margin-top: -10px;
+  margin-bottom: 12px;
+}
 .pagination-container {
   margin: 15px;
   text-align: right;
