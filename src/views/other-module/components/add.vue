@@ -55,6 +55,66 @@
           ></el-input>
         </el-form-item>
 
+        <el-form-item label="家属性别" prop="gender" required>
+          <el-select
+            v-model="formData.gender"
+            placeholder="请选择家属性别"
+            style="width: 220px"
+          >
+            <el-option label="男" value="男"></el-option>
+            <el-option label="女" value="女"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="户籍所在地" prop="censusRegister" required>
+          <el-input
+            style="width: 220px"
+            v-model="formData.censusRegister"
+            placeholder="请输入户籍所在地"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="身份证签发机关" prop="issuingAuthority" required>
+          <el-input
+            style="width: 220px"
+            v-model="formData.issuingAuthority"
+            placeholder="请输入身份证签发机关"
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+          label="身份证有效期开始时间"
+          prop="validPeriodStart"
+          required
+        >
+          <el-date-picker
+            v-model="formData.validPeriodStart"
+            type="dates"
+            style="width: 220px"
+            format="yyyy.MM.dd"
+            value-format="yyyy.MM.dd"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item
+          label="身份证有效期结束时间"
+          prop="validPeriodEnd"
+          required
+        >
+          <el-date-picker
+            v-model="formData.validPeriodEnd"
+            type="dates"
+            style="width: 220px"
+            format="yyyy.MM.dd"
+            value-format="yyyy.MM.dd"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="家庭住址" prop="address" required>
+          <el-input
+            v-model="formData.address"
+            placeholder="请输入家庭住址"
+          ></el-input>
+        </el-form-item>
         <el-form-item label="运营商" prop="operator" required>
           <el-select
             v-model="formData.operator"
@@ -83,8 +143,8 @@
             "
           >
             <img
-              v-if="imgProfilePhotoUrl"
-              :src="imgProfilePhotoUrl"
+              v-if="profilePhotoImgUrl"
+              :src="profilePhotoImgUrl"
               class="avatar"
             />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -99,7 +159,7 @@
             :headers="uploadHeader"
             :on-success="(res, file) => handleAvatarSuccess(res, file, 'pidZ')"
           >
-            <img v-if="imgPidZUrl" :src="imgPidZUrl" class="avatar" />
+            <img v-if="pidZImgUrl" :src="pidZImgUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
@@ -112,7 +172,7 @@
             :headers="uploadHeader"
             :on-success="(res, file) => handleAvatarSuccess(res, file, 'pidB')"
           >
-            <img v-if="imgPidBUrl" :src="imgPidBUrl" class="avatar" />
+            <img v-if="pidBImgUrl" :src="pidBImgUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
@@ -127,7 +187,7 @@
               (res, file) => handleAvatarSuccess(res, file, 'assist')
             "
           >
-            <img v-if="imgAssistUrl" :src="imgAssistUrl" class="avatar" />
+            <img v-if="assistImgUrl" :src="assistImgUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
@@ -142,7 +202,6 @@
 
 <script>
 import { getToken } from '@/utils/auth'
-import { cloneDeep } from 'lodash'
 export default {
   data() {
     return {
@@ -175,10 +234,10 @@ export default {
       },
       formData: {},
       dialogVisible: false,
-      imgProfilePhotoUrl: '',
-      imgPidZUrl: '',
-      imgPidBUrl: '',
-      imgAssistUrl: '',
+      profilePhotoImgUrl: '',
+      pidZImgUrl: '',
+      pidBImgUrl: '',
+      assistImgUrl: '',
       relationList: [],
       uploadHeader: {
         Authorization: 'Bearer ' + getToken()
@@ -191,7 +250,6 @@ export default {
     dialogVisible(newVal) {
       if (newVal) {
         this.initData()
-        this.formData = cloneDeep(this.rowData)
         this.$refs.add && this.$refs.add.resetFields()
       }
     }
@@ -202,8 +260,7 @@ export default {
   methods: {
     handleAvatarSuccess(res, file, type) {
       if (res.code !== 0) return this.$message.warning('服务器出错，请稍后再试')
-      this['img' + type.slice(0, 1).toUpperCase() + type.slice(1) + 'ImgUrl'] =
-        URL.createObjectURL(file.raw)
+      this[type + 'ImgUrl'] = URL.createObjectURL(file.raw)
       this.formData[type + 'ImgId'] = res.result.imgId
     },
     async getRalationList() {
@@ -227,27 +284,26 @@ export default {
       this.formData = {
         prisonId: sessionStorage.getItem('prisonId'),
         relationVal: [],
-        fxId: '', // 囚号
-        fxName: '', //  囚犯姓名
-        relationLv1: '', // 家属关系类型
-        relationLv2: '', // 家属关系
-        pid: '', // 家属身份证号
-        name: '', // 家属姓名
-        phoneCode: '', //手机号
-        operator: '', // "运营商"
-        manager: '', // "客户经理"
+        fxId: 'pr-id-0004', // 囚号
+        fxName: '赵六', //  囚犯姓名
+        relationLv1: '兄弟姐妹', // 家属关系类型
+        relationLv2: '弟弟', // 家属关系
+        pid: 'pr-4-pid-0005', // 家属身份证号
+        name: '赵七', // 家属姓名
+        phoneCode: '13800138005', //手机号
+        gender: '男', // 性别
+        censusRegister: '广东深圳', // 户籍所在地
+        issuingAuthority: '广东省深圳市', // "身份证签发机关"
+        validPeriodStart: '2020.10.10', // "身份证有效期开始时间" 2020.10.10
+        validPeriodEnd: '2020.10.10', // "身份证有效期开始时间" 2020.10.10
+        address: '广东省深圳市福田区', // "家庭住址"
+        operator: '移动', // "运营商"
+        manager: '客户经理1', // "客户经理"
         profilePhotoImgId: '', // 家属头像图片Id
         pidZImgId: '', // 身份证正面图片Id
         pidBImgId: '', // 身份证反面图片Id
         assistImgId: '' // 辅助证明图片Id
       }
-      this.imgProfilePhotoUrl = this.rowData.imgProfilePhotoUrl
-      this.imgPidZUrl = this.rowData.imgPidZUrl
-      this.imgPidBUrl = this.rowData.imgPidBUrl
-      this.formData.relationVal = [
-        this.rowData.relationLv1,
-        this.rowData.relationLv2
-      ]
     },
     submit() {
       this.$refs.add.validate(async valid => {

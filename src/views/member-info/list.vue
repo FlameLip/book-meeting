@@ -58,12 +58,12 @@
         :show-file-list="false"
         :on-success="handleUploadSuccess"
       >
-        <el-button size="small" type="primary">点击上传</el-button>
+        <el-button size="small" type="primary">批量导入</el-button>
       </el-upload>
-
       <el-button
         size="small"
         type="danger"
+        class="batch-delete"
         @click="bacthDelete"
         :disabled="multipleSelection.length === 0"
         >批量删除</el-button
@@ -95,18 +95,18 @@
         </el-table-column> -->
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column label="区域" prop="areaName" />
-        <el-table-column label="服刑人员姓名" prop="fxName"></el-table-column>
+        <el-table-column label="服刑人员" prop="fxName"></el-table-column>
         <el-table-column label="家属姓名" prop="memberName"> </el-table-column>
         <el-table-column label="家属人数" prop="memberNumber">
         </el-table-column>
         <el-table-column label="一级关系" prop="memberRelationLv1" />
         <el-table-column label="二级关系" prop="memberRelationLv2" />
         <el-table-column label="身份证号码" width="180" prop="memberPID" />
-        <el-table-column label="家属号码" prop="memberPhoneCode" />
+        <el-table-column label="家属号码" width="120" prop="memberPhoneCode" />
         <el-table-column label="状态" prop="verifyStatusMsg"> </el-table-column>
         <el-table-column label="审核用户" prop="verifyUser" />
-        <el-table-column label="审核时间" prop="verifyTime" />
-        <el-table-column label="操作" width="120">
+        <el-table-column label="审核时间" width="150" prop="verifyTime" />
+        <el-table-column label="操作" fixed="right" width="80">
           <template slot-scope="scope">
             <el-button size="small" type="text" @click="openDialog(scope.row)"
               >查看详情</el-button
@@ -133,7 +133,6 @@
 <script>
 import detail from './components/detail'
 import { getToken } from '@/utils/auth'
-// todo 上传没加token 接口返回需求token， 加了token反而变成404了
 const statusObj = {
   0: '未审核',
   1: '审核通过',
@@ -222,13 +221,19 @@ export default {
       })
     },
     bacthAudit() {
-      const pids = this.multipleSelection.map(item => item.memberPID)
+      const pids = this.multipleSelection.map(item => {
+        return {
+          prisonId: this.prisonId,
+          fxId: item.fxId,
+          pid: item.memberPID
+        }
+      })
       this.$confirm('此操作将批量审核选中数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        await this.$api.memberAccept({ pid: pids })
+        await this.$api.memberAccept(pids)
         this.$message.success('操作成功')
         this.getTableList()
       })
@@ -311,6 +316,10 @@ export default {
 .upload-box {
   margin-top: -10px;
   margin-bottom: 12px;
+  display: flex;
+  .batch-delete {
+    margin-left: 10px;
+  }
 }
 .pagination-container {
   margin: 15px;

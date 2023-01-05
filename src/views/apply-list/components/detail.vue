@@ -3,6 +3,7 @@
     <el-dialog
       :visible.sync="dialogVisible"
       width="1000px"
+      style="maxheight: 70vh"
       center
       :show-close="false"
     >

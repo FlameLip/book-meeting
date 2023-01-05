@@ -182,13 +182,13 @@ export default {
   },
   methods: {
     async accept() {
-      await this.$api.memberAccept({
-        prisonId: this.prisonId, //监狱ID
-        areaName: this.rowData.areaName, //监区ID
-        fxId: this.rowData.fxId, // 囚号
-        fxName: this.rowData.fxName, // 服务人员姓名
-        pid: this.rowData.memberPID // 家属身份证号
-      })
+      await this.$api.memberAccept([
+        {
+          prisonId: this.prisonId, //监狱ID
+          fxId: this.rowData.fxId, // 囚号
+          pid: this.rowData.memberPID // 家属身份证号
+        }
+      ])
       this.$message.success('操作成功')
       this.dialogVisible = false
       this.$emit('reload')
