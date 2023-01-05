@@ -180,8 +180,7 @@ export default {
       prisonList: [],
       extraParams: {
         prisonId: sessionStorage.getItem('prisonId'),
-        isHaveOperatorManager: false,
-        excel: ''
+        isHaveOperatorManager: false
       },
       uploadUrl: process.env.VUE_APP_BASE_API + '/upload/upload-excel',
       uploadHeader: {
@@ -245,21 +244,21 @@ export default {
       const res = await this.$api.getPrisonList()
       this.prisonList = res
     },
-    handleBeforeUpload(file) {
-      this.extraParams.excel = file
-    },
+    handleBeforeUpload(file) {},
     handleUploadSuccess(res) {
       if (res.code === 0) {
         const result = res.result
         if (result.failed.length !== 0) {
           let str = `共上传${result.total}条数据，成功${result.success}条，其中<br/>`
           str = str + result.failed.join('<br/>')
+          this.getTableList()
           return this.$message({
             dangerouslyUseHTMLString: true,
             message: str,
             type: 'warning'
           })
         }
+        this.getTableList()
         this.$message.success('上传成功')
       } else {
         this.$message.error(res.msg)

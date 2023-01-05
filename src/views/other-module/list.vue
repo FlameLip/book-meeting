@@ -47,7 +47,7 @@
         <el-table-column label="身份证号码" width="240" prop="pid">
         </el-table-column>
         <el-table-column label="关联服刑人员" prop="fxName"> </el-table-column>
-        <el-table-column label="关系" prop="relation"> </el-table-column>
+        <el-table-column label="关系" prop="relationLv2"> </el-table-column>
         <el-table-column label="运营商" prop="operator"> </el-table-column>
         <el-table-column label="客户经理" prop="manager"> </el-table-column>
         <el-table-column label="操作" width="180">
@@ -111,8 +111,7 @@ export default {
       total: 0,
       extraParams: {
         prisonId: sessionStorage.getItem('prisonId'),
-        isHaveOperatorManager: true,
-        excel: ''
+        isHaveOperatorManager: true
       },
       uploadUrl: process.env.VUE_APP_BASE_API + '/upload/upload-excel',
       uploadHeader: {
@@ -148,9 +147,7 @@ export default {
         this.getList()
       })
     },
-    handleBeforeUpload(file) {
-      this.extraParams.excel = file
-    },
+    handleBeforeUpload(file) {},
     handleUploadSuccess(res) {
       if (res.code === 0) {
         const result = res.result

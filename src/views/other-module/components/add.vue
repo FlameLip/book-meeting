@@ -284,26 +284,30 @@ export default {
       this.formData = {
         prisonId: sessionStorage.getItem('prisonId'),
         relationVal: [],
-        fxId: 'pr-id-0004', // 囚号
-        fxName: '赵六', //  囚犯姓名
-        relationLv1: '兄弟姐妹', // 家属关系类型
-        relationLv2: '弟弟', // 家属关系
-        pid: 'pr-4-pid-0005', // 家属身份证号
-        name: '赵七', // 家属姓名
-        phoneCode: '13800138005', //手机号
-        gender: '男', // 性别
-        censusRegister: '广东深圳', // 户籍所在地
-        issuingAuthority: '广东省深圳市', // "身份证签发机关"
-        validPeriodStart: '2020.10.10', // "身份证有效期开始时间" 2020.10.10
-        validPeriodEnd: '2020.10.10', // "身份证有效期开始时间" 2020.10.10
-        address: '广东省深圳市福田区', // "家庭住址"
-        operator: '移动', // "运营商"
-        manager: '客户经理1', // "客户经理"
+        fxId: '', // 囚号
+        fxName: '', //  囚犯姓名
+        relationLv1: '', // 家属关系类型
+        relationLv2: '', // 家属关系
+        pid: '', // 家属身份证号
+        name: '', // 家属姓名
+        phoneCode: '', //手机号
+        gender: '', // 性别
+        censusRegister: '', //
+        issuingAuthority: '', // "身份证签发机关"
+        validPeriodStart: '', // "身份证有效期开始时间" 2020.10.10
+        validPeriodEnd: '', // "身份证有效期开始时间" 2020.10.10
+        address: '', // "家庭住址"
+        operator: '', // "运营商"
+        manager: '', // "客户经理"
         profilePhotoImgId: '', // 家属头像图片Id
         pidZImgId: '', // 身份证正面图片Id
         pidBImgId: '', // 身份证反面图片Id
         assistImgId: '' // 辅助证明图片Id
       }
+      this.profilePhotoImgUrl = ''
+      this.pidZImgUrl = ''
+      this.pidBImgUrl = ''
+      this.assistImgUrl = ''
     },
     submit() {
       this.$refs.add.validate(async valid => {

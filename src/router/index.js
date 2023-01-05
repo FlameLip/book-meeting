@@ -190,7 +190,7 @@ export const constantRoutes = [
       {
         path: '',
         name: 'otherModule',
-        component: () => import('@/views/other-module/index'),
+        component: () => import('@/views/other-module/list'),
         meta: { title: '其他', icon: 'el-icon-more' }
       }
     ]

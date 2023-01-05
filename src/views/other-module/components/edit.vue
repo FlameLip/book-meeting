@@ -27,10 +27,11 @@
             placeholder="请输入服刑人员姓名"
           ></el-input>
         </el-form-item>
-        <el-form-item label="关系类型" prop="relationVal" required>
+        <el-form-item label="关系类型" prop="relationLv2" required>
           <el-cascader
-            v-model="formData.relationVal"
+            v-model="relationVal"
             :options="relationList"
+            @change="handleChange"
           ></el-cascader>
         </el-form-item>
         <el-form-item label="家属姓名" prop="name" required>
@@ -72,7 +73,7 @@
             placeholder="请输入客户经理"
           ></el-input>
         </el-form-item>
-        <el-form-item label="家属头像" prop="profilePhotoImgId" required>
+        <el-form-item label="家属头像" prop="imgProfilePhotoUrl" required>
           <el-upload
             :action="uploadUrl"
             class="avatar-box"
@@ -83,14 +84,14 @@
             "
           >
             <img
-              v-if="imgProfilePhotoUrl"
-              :src="imgProfilePhotoUrl"
+              v-if="formData.imgProfilePhotoUrl"
+              :src="formData.imgProfilePhotoUrl"
               class="avatar"
             />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="身份证正面" prop="pidZImgId" required>
+        <el-form-item label="身份证正面" prop="imgPidZUrl" required>
           <el-upload
             class="avatar-box"
             style="width: 224px; height: 125px"
@@ -99,11 +100,15 @@
             :headers="uploadHeader"
             :on-success="(res, file) => handleAvatarSuccess(res, file, 'pidZ')"
           >
-            <img v-if="imgPidZUrl" :src="imgPidZUrl" class="avatar" />
+            <img
+              v-if="formData.imgPidZUrl"
+              :src="formData.imgPidZUrl"
+              class="avatar"
+            />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="身份证反面" prop="pidBImgId">
+        <el-form-item label="身份证反面" prop="imgPidBUrl">
           <el-upload
             class="avatar-box"
             style="width: 224px; height: 125px"
@@ -112,11 +117,15 @@
             :headers="uploadHeader"
             :on-success="(res, file) => handleAvatarSuccess(res, file, 'pidB')"
           >
-            <img v-if="imgPidBUrl" :src="imgPidBUrl" class="avatar" />
+            <img
+              v-if="formData.imgPidBUrl"
+              :src="formData.imgPidBUrl"
+              class="avatar"
+            />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="辅助证明" prop="assistImgId">
+        <!-- <el-form-item label="辅助证明" prop="imgAssistUrl">
           <el-upload
             class="avatar-box"
             style="width: 224px; height: 125px"
@@ -127,10 +136,14 @@
               (res, file) => handleAvatarSuccess(res, file, 'assist')
             "
           >
-            <img v-if="imgAssistUrl" :src="imgAssistUrl" class="avatar" />
+            <img
+              v-if="formData.imgAssistUrl"
+              :src="formData.imgAssistUrl"
+              class="avatar"
+            />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -174,11 +187,8 @@ export default {
         ]
       },
       formData: {},
+      relationVal: [],
       dialogVisible: false,
-      imgProfilePhotoUrl: '',
-      imgPidZUrl: '',
-      imgPidBUrl: '',
-      imgAssistUrl: '',
       relationList: [],
       uploadHeader: {
         Authorization: 'Bearer ' + getToken()
@@ -191,7 +201,7 @@ export default {
     dialogVisible(newVal) {
       if (newVal) {
         this.initData()
-        this.formData = cloneDeep(this.rowData)
+        this.formData = Object.assign(this.formData, cloneDeep(this.rowData))
         this.$refs.add && this.$refs.add.resetFields()
       }
     }
@@ -202,8 +212,9 @@ export default {
   methods: {
     handleAvatarSuccess(res, file, type) {
       if (res.code !== 0) return this.$message.warning('服务器出错，请稍后再试')
-      this['img' + type.slice(0, 1).toUpperCase() + type.slice(1) + 'ImgUrl'] =
-        URL.createObjectURL(file.raw)
+      this.formData[
+        'img' + type.slice(0, 1).toUpperCase() + type.slice(1) + 'Url'
+      ] = URL.createObjectURL(file.raw)
       this.formData[type + 'ImgId'] = res.result.imgId
     },
     async getRalationList() {
@@ -226,7 +237,6 @@ export default {
     initData() {
       this.formData = {
         prisonId: sessionStorage.getItem('prisonId'),
-        relationVal: [],
         fxId: '', // 囚号
         fxName: '', //  囚犯姓名
         relationLv1: '', // 家属关系类型
@@ -239,22 +249,26 @@ export default {
         profilePhotoImgId: '', // 家属头像图片Id
         pidZImgId: '', // 身份证正面图片Id
         pidBImgId: '', // 身份证反面图片Id
-        assistImgId: '' // 辅助证明图片Id
+        assistImgId: '', // 辅助证明图片Id
+        imgProfilePhotoUrl: '',
+        imgPidZUrl: '',
+        imgPidBUrl: ''
       }
-      this.imgProfilePhotoUrl = this.rowData.imgProfilePhotoUrl
-      this.imgPidZUrl = this.rowData.imgPidZUrl
-      this.imgPidBUrl = this.rowData.imgPidBUrl
-      this.formData.relationVal = [
-        this.rowData.relationLv1,
-        this.rowData.relationLv2
-      ]
+      this.relationVal = [this.rowData.relationLv1, this.rowData.relationLv2]
+    },
+    handleChange(value) {
+      this.formData.relationLv1 = val[0]
+      this.formData.relationLv2 = val[1]
     },
     submit() {
       this.$refs.add.validate(async valid => {
         if (!valid) return
-        this.formData.relationLv1 = this.formData.relationVal[0]
-        this.formData.relationLv2 = this.formData.relationVal[1]
-        await this.$api.addPhoneCodeWhite(this.formData)
+        const params = {
+          orgPid: this.rowData.pid,
+          orgPhoneCode: this.rowData.phoneCode,
+          ...this.formData
+        }
+        await this.$api.modifyPhoneCodeWhite(params)
         this.$message.success('新增成功')
         this.dialogVisible = false
         this.$emit('reload')
