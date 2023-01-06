@@ -7,8 +7,11 @@
         ref="searchForm"
         label-position="right"
       >
-        <el-form-item label="单位" prop="prisonName">
-          <el-select v-model="searchForm.prisonName">
+        <el-form-item label="单位" prop="prisonName" v-if="userInfo.isSuper">
+          <el-select
+            v-model="searchForm.prisonName"
+            @change="handlePrisonChange"
+          >
             <el-option
               v-for="item in prisonList"
               :label="item.prisonName"
@@ -178,6 +181,7 @@ export default {
       },
       areaList: [],
       prisonList: [],
+      prisonId: sessionStorage.getItem('prisonId'),
       extraParams: {
         prisonId: sessionStorage.getItem('prisonId'),
         isHaveOperatorManager: false
@@ -190,9 +194,6 @@ export default {
     }
   },
   computed: {
-    prisonId() {
-      return sessionStorage.getItem('prisonId')
-    },
     userInfo() {
       return JSON.parse(sessionStorage.getItem('userInfo'))
     }
@@ -200,7 +201,7 @@ export default {
   created() {
     this.getTableList()
     this.getAreaList()
-    this.getPrisonList()
+    this.userInfo.isSuper && this.getPrisonList()
   },
   methods: {
     bacthDelete() {
@@ -263,6 +264,11 @@ export default {
       } else {
         this.$message.error(res.msg)
       }
+    },
+    handlePrisonChange(val) {
+      const prisonItem = this.prisonList.find(item => item.prisonName === val)
+      this.prisonId = prisonItem.prisonId
+      this.getAreaList()
     },
     async getAreaList() {
       const res = await this.$api.getAreaList({ prisonId: this.prisonId })

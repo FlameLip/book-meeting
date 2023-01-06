@@ -231,6 +231,7 @@ ul, li, h1, h2, h3 {
 
 .el-dialog {
   border-radius: 6px;
+  margin-top: 10vh !important;
   .el-dialog__header {
     font-size: 18px;
     text-align: center;
@@ -243,15 +244,20 @@ ul, li, h1, h2, h3 {
       color: #ffffff;
     }
   }
-}
-.dialog-footer {
-  button {
-    width: 100px;
-    &:nth-of-type(1) {
-      margin-right: 20px;
+  .el-dialog__body {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  .dialog-footer {
+    button {
+      width: 100px;
+      &:nth-of-type(1) {
+        margin-right: 20px;
+      }
     }
   }
 }
+
 .image-slot {
   display: flex;
   justify-content: center;

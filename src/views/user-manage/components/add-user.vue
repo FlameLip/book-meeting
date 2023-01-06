@@ -29,6 +29,17 @@
             placeholder="请输入登录密码"
           ></el-input>
         </el-form-item>
+        <el-form-item label="单位" prop="prisonName" v-if="userInfo.isSuper">
+          <el-select v-model="formData.prisonName" @change="handlePrisonChange">
+            <el-option
+              v-for="item in prisonList"
+              :label="item.prisonName"
+              :value="item.prisonName"
+              :key="item.prisonName"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="审核权限" prop="verifyStep">
           <el-select
             v-model="formData.verifyStep"
@@ -53,6 +64,7 @@
             <el-option label="否" :value="false"></el-option>
           </el-select>
         </el-form-item>
+
         <el-form-item
           label="管理区域"
           prop="manageAreaList"
@@ -95,11 +107,18 @@ export default {
             trigger: 'change'
           }
         ],
+        prisonName: [
+          {
+            required: true,
+            message: '请选择单位',
+            trigger: 'change'
+          }
+        ],
         manageAreaList: [
           {
             type: 'array',
             required: true,
-            message: '请至少选择管理区域',
+            message: '请至少选择一个管理区域',
             trigger: 'change'
           }
         ]
@@ -108,13 +127,16 @@ export default {
         uname: '',
         passwd: '',
         verifyStep: '',
+        prisonName: '',
         isSafety: '', // false/true
         manageAreaList: []
       },
       dialogVisible: false,
       title: '添加用户',
       verifyList: [],
-      areaList: []
+      areaList: [],
+      prisonList: [],
+      prisonId: sessionStorage.getItem('prisonId')
     }
   },
   props: ['rowData'],
@@ -122,8 +144,7 @@ export default {
     async dialogVisible(newVal) {
       if (newVal) {
         this.initData()
-        this.getAreaList()
-        this.getVerifyList()
+
         if (this.type === 'edit') {
           this.formData = this.rowData
           this.title = '修改用户'
@@ -137,11 +158,26 @@ export default {
     type() {
       return Object.keys(this.rowData).length ? 'edit' : 'add'
     },
-    prisonId() {
-      return sessionStorage.getItem('prisonId')
+    userInfo() {
+      return JSON.parse(sessionStorage.getItem('userInfo'))
     }
   },
+  mounted() {
+    this.userInfo.isSuper && this.getPrisonList()
+    this.getAreaList()
+    this.getVerifyList()
+  },
   methods: {
+    async getPrisonList() {
+      const res = await this.$api.getPrisonList()
+      this.prisonList = res
+    },
+    handlePrisonChange(val) {
+      const prisonItem = this.prisonList.find(item => item.prisonName === val)
+      this.prisonId = prisonItem.prisonId
+      this.getAreaList()
+      this.getVerifyList()
+    },
     async getAreaList() {
       const res = await this.$api.getAreaList({ prisonId: this.prisonId })
       this.areaList = res.map(item => item.name)

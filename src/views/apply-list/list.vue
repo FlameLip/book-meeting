@@ -7,6 +7,20 @@
         ref="searchForm"
         label-position="right"
       >
+        <el-form-item label="单位" prop="prisonName" v-if="userInfo.isSuper">
+          <el-select
+            v-model="searchForm.prisonName"
+            @change="handlePrisonChange"
+          >
+            <el-option
+              v-for="item in prisonList"
+              :label="item.prisonName"
+              :value="item.prisonName"
+              :key="item.prisonName"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="服刑人员姓名" prop="fxName">
           <el-input v-model="searchForm.fxName"></el-input>
         </el-form-item>
@@ -149,24 +163,37 @@ export default {
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
         verifyStatus: '',
         isMeetingPolicy: '',
+        prisonName: '',
         isToday: false
       },
+      prisonId: sessionStorage.getItem('prisonId'),
+      prisonList: [],
       areaList: []
     }
   },
   computed: {
-    prisonId() {
-      return sessionStorage.getItem('prisonId')
+    userInfo() {
+      return JSON.parse(sessionStorage.getItem('userInfo'))
     }
   },
   created() {
     this.getList()
     this.getAreaList()
+    this.userInfo.isSuper && this.getPrisonList()
   },
   methods: {
+    async getPrisonList() {
+      const res = await this.$api.getPrisonList()
+      this.prisonList = res
+    },
     async getAreaList() {
       const res = await this.$api.getAreaList({ prisonId: this.prisonId })
       this.areaList = res
+    },
+    handlePrisonChange(val) {
+      const prisonItem = this.prisonList.find(item => item.prisonName === val)
+      this.prisonId = prisonItem.prisonId
+      this.getAreaList()
     },
     getList(searchAllFlag) {
       this.listLoading = true
