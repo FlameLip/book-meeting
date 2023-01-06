@@ -20,73 +20,81 @@
           </el-image>
           <div class="img-desc">服刑人员头像</div>
         </div>
-        <div class="info-middle">
-          <div class="table-box">
-            <ul>
-              <li>
-                <div class="table-tr">服刑人员</div>
-                <div class="table-td">{{ rowData.fxName }}</div>
-              </li>
-              <li>
-                <div class="table-tr">所在监区</div>
-                <div class="table-td">{{ rowData.areaName }}</div>
-              </li>
-              <li>
-                <div class="table-tr">身份号码</div>
-                <div class="table-td">{{ rowData.members[0].memberPID }}</div>
-              </li>
-              <li>
-                <div class="table-tr">家属关系</div>
-                <div class="table-td">
-                  {{ rowData.members[0].memberRelation }}
-                </div>
-              </li>
-              <li>
-                <div class="table-tr">关系类型</div>
-                <div class="table-td">{{ rowData.members[0].memberType }}</div>
-              </li>
-              <li>
-                <div class="table-tr">户籍</div>
-                <div class="table-td">
-                  {{ rowData.members[0].censusRegister }}
-                </div>
-              </li>
-              <li>
-                <div class="table-tr">性别</div>
-                <div class="table-td">{{ rowData.members[0].gender }}</div>
-              </li>
-              <li>
-                <div class="table-tr">认证电话</div>
-                <div class="table-td">{{ rowData.memberPhoneCode }}</div>
-              </li>
-              <li>
-                <div class="table-tr">家庭住址</div>
-                <div class="table-td">{{ rowData.members[0].address }}</div>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="info-right">
-          <h3>身份证照片</h3>
-          <div class="img-box">
-            <el-image
-              style="width: 241px; height: 136px"
-              :src="rowData.members[0].memberPIDImgZUrl"
-              :preview-src-list="srcList"
-            >
-              <div slot="error" class="image-slot">
-                <i class="el-icon-picture-outline"></i>
+        <div class="member-container">
+          <div
+            v-for="item in rowData.members"
+            :key="item.memberPID"
+            class="member-item"
+          >
+            <div class="info-middle">
+              <div class="table-box">
+                <ul>
+                  <li>
+                    <div class="table-tr">服刑人员</div>
+                    <div class="table-td">{{ rowData.fxName }}</div>
+                  </li>
+                  <li>
+                    <div class="table-tr">所在监区</div>
+                    <div class="table-td">{{ rowData.areaName }}</div>
+                  </li>
+                  <li>
+                    <div class="table-tr">身份号码</div>
+                    <div class="table-td">{{ item.memberPID }}</div>
+                  </li>
+                  <li>
+                    <div class="table-tr">关系类型</div>
+                    <div class="table-td">{{ item.memberType }}</div>
+                  </li>
+                  <li>
+                    <div class="table-tr">家属关系</div>
+                    <div class="table-td">
+                      {{ item.memberRelation }}
+                    </div>
+                  </li>
+                  <li>
+                    <div class="table-tr">户籍</div>
+                    <div class="table-td">
+                      {{ item.censusRegister }}
+                    </div>
+                  </li>
+                  <li>
+                    <div class="table-tr">性别</div>
+                    <div class="table-td">{{ item.gender }}</div>
+                  </li>
+                  <li>
+                    <div class="table-tr">认证电话</div>
+                    <div class="table-td">{{ rowData.memberPhoneCode }}</div>
+                  </li>
+                  <li>
+                    <div class="table-tr">家庭住址</div>
+                    <div class="table-td">{{ item.address }}</div>
+                  </li>
+                </ul>
               </div>
-            </el-image>
-            <el-image
-              style="width: 241px; height: 136px"
-              :src="rowData.members[0].memberPIDImgBUrl"
-              :preview-src-list="srcList"
-            >
-              <div slot="error" class="image-slot">
-                <i class="el-icon-picture-outline"></i>
+            </div>
+            <div class="info-right">
+              <h3>身份证照片</h3>
+              <div class="img-box">
+                <el-image
+                  style="width: 241px; height: 136px"
+                  :src="item.memberPIDImgZUrl"
+                  :preview-src-list="srcList"
+                >
+                  <div slot="error" class="image-slot">
+                    <i class="el-icon-picture-outline"></i>
+                  </div>
+                </el-image>
+                <el-image
+                  style="width: 241px; height: 136px"
+                  :src="item.memberPIDImgBUrl"
+                  :preview-src-list="srcList"
+                >
+                  <div slot="error" class="image-slot">
+                    <i class="el-icon-picture-outline"></i>
+                  </div>
+                </el-image>
               </div>
-            </el-image>
+            </div>
           </div>
         </div>
       </div>
@@ -147,12 +155,7 @@ export default {
       windowList: []
     }
   },
-  computed: {
-    prisonId() {
-      return sessionStorage.getItem('prisonId')
-    }
-  },
-  props: ['rowData'],
+  props: ['rowData', 'prisonId'],
   watch: {
     async dialogVisible(newVal) {
       if (newVal) {
@@ -264,6 +267,15 @@ export default {
         color: #ffffff;
         background: #7b94bc;
         margin-top: -4px;
+      }
+    }
+    .member-container {
+      max-height: 500px;
+      overflow: hidden;
+      overflow-y: auto;
+      .member-item {
+        display: flex;
+        margin-bottom: 10px;
       }
     }
     .info-middle {

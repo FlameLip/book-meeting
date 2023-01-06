@@ -94,7 +94,7 @@
           </div>
           <div class="card-box">
             <div class="card-item">
-              <h3>辅助说明</h3>
+              <h3>辅助证明</h3>
               <el-image
                 style="width: 196px; height: 125px"
                 :src="rowData.assistImgUrl"

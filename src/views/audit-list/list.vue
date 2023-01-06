@@ -87,7 +87,12 @@
       >
       </el-pagination>
     </div>
-    <detail ref="detail" :rowData="rowData" @reload="getList" />
+    <detail
+      ref="detail"
+      :rowData="rowData"
+      :prisonId="prisonId"
+      @reload="getList"
+    />
   </div>
 </template>
 

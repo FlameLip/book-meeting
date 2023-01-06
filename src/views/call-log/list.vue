@@ -74,12 +74,12 @@
         </el-table-column> -->
         <el-table-column label="区域" prop="areaName" />
         <el-table-column label="服刑人员姓名" prop="fxName"></el-table-column>
-        <el-table-column label="开始时间" prop="memberName"> </el-table-column>
+        <el-table-column label="开始时间" prop="starTime"> </el-table-column>
         <el-table-column label="家属人数" prop="memberNumber">
         </el-table-column>
-        <el-table-column label="关系" prop="memberRelationLv1" />
+        <el-table-column label="关系" prop="memberRelation" />
         <el-table-column label="家属号码" prop="memberPhoneCode" />
-        <el-table-column label="干警" prop="verifyStatusMsg"> </el-table-column>
+        <el-table-column label="干警" prop="adminName"> </el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
             <el-button size="small" type="text" @click="openDialog(scope.row)"
@@ -103,12 +103,17 @@
       >
       </el-pagination>
     </div>
-    <!-- <detail ref="detail" :rowData="rowData" @reload="getList" /> -->
+    <detail
+      ref="detail"
+      :rowData="rowData"
+      :prisonId="prisonId"
+      @reload="getList"
+    />
   </div>
 </template>
 
 <script>
-// import detail from './components/detail'
+import detail from '../apply-list/components/detail'
 
 const statusObj = {
   0: '未审核',
@@ -117,7 +122,7 @@ const statusObj = {
   '-2': '取消审核'
 }
 export default {
-  // components: { detail },
+  components: { detail },
   data() {
     return {
       statusObj,
@@ -170,6 +175,14 @@ export default {
     }
   },
   methods: {
+    async openDialog(row) {
+      const res = await this.$api.getCallDetail({
+        prisonId: this.prisonId,
+        meetingId: row.meetingId
+      })
+      this.rowData = res
+      this.$refs.detail.dialogVisible = true
+    },
     async getPrisonList() {
       const res = await this.$api.getPrisonList()
       this.prisonList = res
@@ -203,7 +216,7 @@ export default {
         }
       }
       try {
-        this.$api.getMemberList(params).then(res => {
+        this.$api.getCallList(params).then(res => {
           this.list = res.list
           this.total = res.total
         })

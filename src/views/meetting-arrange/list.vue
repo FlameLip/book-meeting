@@ -104,6 +104,7 @@
 import edit from './components/edit'
 import { cloneDeep } from 'lodash'
 import { parseTime } from '@/utils/index'
+import dayjs from 'dayjs'
 export default {
   components: { edit },
   data() {
@@ -136,7 +137,7 @@ export default {
       total: 0,
       searchForm: {
         areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
-        meetingDate: parseTime(new Date(), 'yyyy.mm.dd')
+        meetingDate: dayjs().format('YYYY.MM.DD')
       },
       areaList: []
     }
