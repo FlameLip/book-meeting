@@ -23,8 +23,8 @@
           </template>
         </el-table-column>
         <el-table-column label="用户名" prop="uname" width="180" />
-        <el-table-column label="审核权限" width="130" prop="verifyStepName">
-        </el-table-column>
+        <el-table-column label="审核权限" width="130" prop="verifyStepName" />
+        <el-table-column label="监狱单位" width="130" prop="prisonName" />
         <el-table-column label="控制安全级别" width="120" prop="isSafety">
           <template slot-scope="scope">
             {{ scope.row.isSafety ? '是' : '否' }}

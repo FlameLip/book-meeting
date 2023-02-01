@@ -77,16 +77,16 @@ export default {
     }
   },
   data() {
-    // To fix https://github.com/PanJiaChen/vue-admin-template/issues/237
-    // TODO: refactor with render function
     this.onlyOneChild = null
     return {
-      superItem: ['/systemSetting', '/otherModule']
+      superItem: ['/systemSetting', '/otherModule'], // 管理员展示菜单
+      systemItem: ['/meettingPolicy', '/callArrange'] // 管理员隐藏菜单
     }
   },
   methods: {
     showItemFlag(route) {
       if (this.userInfo.isSuper) {
+        if (this.systemItem.includes(route.path)) return false
         return true
       } else {
         if (this.superItem.includes(route.path)) return false

@@ -10,45 +10,46 @@
       <el-form
         :model="formData"
         ref="add"
+        :rules="rules"
         label-width="120px"
         label-position="left"
       >
-        <el-form-item label="囚号" prop="fxId" required>
+        <el-form-item label="囚号" prop="fxId">
           <el-input
             style="width: 220px"
             v-model="formData.fxId"
             placeholder="请输入囚号"
           ></el-input>
         </el-form-item>
-        <el-form-item label="服刑人员姓名" prop="fxName" required>
+        <el-form-item label="服刑人员姓名" prop="fxName">
           <el-input
             style="width: 220px"
             v-model="formData.fxName"
             placeholder="请输入服刑人员姓名"
           ></el-input>
         </el-form-item>
-        <el-form-item label="关系类型" prop="relationLv2" required>
+        <el-form-item label="关系类型" prop="relationLv2">
           <el-cascader
             v-model="relationVal"
             :options="relationList"
             @change="handleChange"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="家属姓名" prop="name" required>
+        <el-form-item label="家属姓名" prop="name">
           <el-input
             style="width: 220px"
             v-model="formData.name"
             placeholder="请输入家属姓名"
           ></el-input>
         </el-form-item>
-        <el-form-item label="家属身份证号" prop="pid" required>
+        <el-form-item label="家属身份证号" prop="pid">
           <el-input
             style="width: 220px"
             v-model="formData.pid"
             placeholder="请输入家属身份证号"
           ></el-input>
         </el-form-item>
-        <el-form-item label="家属手机号" prop="phoneCode" required>
+        <el-form-item label="家属手机号" prop="phoneCode">
           <el-input
             style="width: 220px"
             v-model="formData.phoneCode"
@@ -56,7 +57,7 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="运营商" prop="operator" required>
+        <el-form-item label="运营商" prop="operator">
           <el-select
             v-model="formData.operator"
             placeholder="请选择运营商"
@@ -67,13 +68,13 @@
             <el-option label="联通" value="联通"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="客户经理" prop="manager" required>
+        <el-form-item label="客户经理" prop="manager">
           <el-input
             v-model="formData.manager"
             placeholder="请输入客户经理"
           ></el-input>
         </el-form-item>
-        <el-form-item label="家属头像" prop="imgProfilePhotoUrl" required>
+        <el-form-item label="家属头像" prop="imgProfilePhotoUrl">
           <el-upload
             :action="uploadUrl"
             class="avatar-box"
@@ -91,7 +92,7 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="身份证正面" prop="imgPidZUrl" required>
+        <el-form-item label="身份证正面" prop="imgPidZUrl">
           <el-upload
             class="avatar-box"
             style="width: 224px; height: 125px"
@@ -160,31 +161,68 @@ export default {
   data() {
     return {
       rules: {
-        uname: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
+        fxId: [{ required: true, message: '请填写囚号', trigger: 'blur' }],
+        fxName: [
+          { required: true, message: '请输入服刑人员姓名', trigger: 'blur' }
         ],
-        passwd: [
-          { required: true, message: '请填写登录密码', trigger: 'blur' }
-        ],
-        verifyLv: [
-          { required: true, message: '请选择审核权限', trigger: 'change' }
-        ],
-        isSafety: [
+        relationVal: [
           {
             required: true,
-            message: '请选择是否控制安全级别',
+            message: '请选择关系类型',
             trigger: 'change'
           }
         ],
-        manageAreaList: [
+        name: [{ required: true, message: '请输入家属姓名', trigger: 'blur' }],
+        pid: [
+          { required: true, message: '请输入家属身份证号', trigger: 'blur' }
+        ],
+        phoneCode: [
+          { required: true, message: '请输入家属手机号', trigger: 'blur' }
+        ],
+        gender: [
+          { required: true, message: '请选择家属性别', trigger: 'change' }
+        ],
+        censusRegister: [
+          { required: true, message: '请输入户籍所在地', trigger: 'blur' }
+        ],
+        issuingAuthority: [
+          { required: true, message: '请输入身份证签发机关', trigger: 'blur' }
+        ],
+        validPeriodStart: [
           {
-            type: 'array',
             required: true,
-            message: '请至少选择管理区域',
+            message: '请选择身份证有效期开始时间',
             trigger: 'change'
           }
+        ],
+        validPeriodEnd: [
+          {
+            required: true,
+            message: '请选择身份证有效期结束时间',
+            trigger: 'change'
+          }
+        ],
+        address: [
+          { required: true, message: '请输入家庭住址', trigger: 'blur' }
+        ],
+        operator: [
+          { required: true, message: '请选择运营商', trigger: 'change' }
+        ],
+        manager: [
+          { required: true, message: '请输入客户经理', trigger: 'blur' }
+        ],
+        profilePhotoImgId: [
+          { required: true, message: '请上传家属头像', trigger: 'blur' }
+        ],
+        pidZImgId: [
+          { required: true, message: '请上传身份证正面', trigger: 'blur' }
+        ],
+        pidBImgId: [
+          { required: true, message: '请上传身份证反面', trigger: 'blur' }
         ]
+        // assistImgId: [
+        //   { required: true, message: '请上传辅助正证明', trigger: 'change' }
+        // ],
       },
       formData: {},
       relationVal: [],

@@ -89,6 +89,7 @@
     </div>
     <detail
       ref="detail"
+      type="audit"
       :rowData="rowData"
       :prisonId="prisonId"
       @reload="getList"

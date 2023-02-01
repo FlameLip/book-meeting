@@ -22,7 +22,7 @@
             :disabled="type === 'edit'"
           ></el-input>
         </el-form-item>
-        <el-form-item label="登录密码" prop="passwd" :required="type === 'add'">
+        <el-form-item label="登录密码" prop="passwd">
           <el-input
             style="width: 220px"
             v-model="formData.passwd"
@@ -91,11 +91,21 @@
 <script>
 export default {
   data() {
+    var validatePass = (rule, value, callback) => {
+      if (value === '' && this.type === 'add') {
+        callback(new Error('请输入登录密码'))
+      } else {
+        callback()
+      }
+    }
     return {
       rules: {
-        uname: [
-          { required: true, message: '请输入用户名称', trigger: 'change' },
-          { min: 3, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
+        uname: [{ required: true, message: '请输入用户名称', trigger: 'blur' }],
+        passwd: [
+          {
+            validator: validatePass,
+            trigger: 'blur'
+          }
         ],
         verifyStep: [
           { required: true, message: '请选择审核权限', trigger: 'change' }
@@ -144,12 +154,11 @@ export default {
     async dialogVisible(newVal) {
       if (newVal) {
         this.initData()
-
+        this.$refs.addUser && this.$refs.addUser.resetFields()
         if (this.type === 'edit') {
           this.formData = this.rowData
           this.title = '修改用户'
         } else {
-          this.$refs.addUser && this.$refs.addUser.resetFields()
         }
       }
     }

@@ -104,19 +104,41 @@
         style="margin: 20px 0 0 170px"
       >
         <el-form-item label="会见时间" prop="window">
-          <el-radio-group v-model="formData.window" :border="true" size="small">
-            <el-radio-button
-              v-for="(item, index) in windowList"
-              :label="item.label"
-              :key="index"
-            ></el-radio-button>
-          </el-radio-group>
+          <template v-if="windowList.length && type === 'audit'">
+            <el-radio-group
+              v-model="formData.window"
+              :border="true"
+              size="small"
+            >
+              <el-radio-button
+                v-for="(item, index) in windowList"
+                :label="item.label"
+                :key="index"
+              ></el-radio-button>
+            </el-radio-group>
+          </template>
+          <div
+            class="no-window"
+            v-else-if="type === 'audit' && !windowList.length"
+            style="color: #f56c6c"
+          >
+            无可用会见室
+          </div>
+          <div v-else-if="type === 'call'">
+            {{
+              rowData.meetingDate +
+              (rowData.startTime
+                ? rowData.startTime + '-' + rowData.endTime
+                : '')
+            }}
+          </div>
         </el-form-item>
         <el-form-item label="拒绝原因">
           <el-select
             v-model="formData.reason"
             placeholder="请选择拒绝原因"
             style="width: 220px"
+            :disabled="type === 'call'"
           >
             <el-option
               v-for="(item, index) in reasonList"
@@ -127,7 +149,7 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+      <span slot="footer" class="dialog-footer" v-if="type === 'audit'">
         <el-button type="danger" @click="reject">拒绝</el-button>
         <el-button
           type="success"
@@ -150,21 +172,26 @@ export default {
       timeList: [],
       formData: {
         window: '',
-        reson: ''
+        reason: ''
       },
       windowList: []
     }
   },
-  props: ['rowData', 'prisonId'],
+  props: ['rowData', 'prisonId', 'type'],
   watch: {
     async dialogVisible(newVal) {
       if (newVal) {
+        console.log(this.type)
         const { fxProfilePhotoUrl, members } = this.rowData
         this.srcList = [
           fxProfilePhotoUrl,
           members[0].memberPIDImgZUrl,
           members[0].memberPIDImgBUrl
         ]
+        this.formData = {
+          window: '',
+          reason: ''
+        }
         this.getApplyrRejectList()
         await this.getUsableTimeList()
         this.initWindow()
@@ -182,6 +209,7 @@ export default {
           return item
         }
       })
+      this.formData.reason = this.rowData.reason
       if (!item) return
       this.formData.window = `${item.windowId} ${item.startTime}-${item.endTime} 剩余${item.orders.length}`
     },
@@ -192,6 +220,7 @@ export default {
       this.reasonList = res
     },
     async getUsableTimeList() {
+      this.windowList = []
       const res = await this.$api.getUsableTimeList({
         prisonId: this.prisonId, //监狱ID
         meetingId: this.rowData.meetingId,
@@ -233,8 +262,7 @@ export default {
       await this.$api.applyrReject({
         prisonId: this.prisonId, //监狱ID
         meetingId: this.rowData.meetingId,
-        reason: 'this.formData.reason'
-        // reason: this.formData.reason
+        reason: this.formData.reason
       })
       this.$message.success('操作成功')
       this.dialogVisible = false

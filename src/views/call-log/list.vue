@@ -105,6 +105,7 @@
     </div>
     <detail
       ref="detail"
+      type="call"
       :rowData="rowData"
       :prisonId="prisonId"
       @reload="getList"
