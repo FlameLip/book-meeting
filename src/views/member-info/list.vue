@@ -78,6 +78,9 @@
         :disabled="multipleSelection.length === 0"
         >批量审核</el-button
       >
+      <el-button size="small" type="success" @click="download"
+        >模板下载</el-button
+      >
     </div>
     <div class="table-container">
       <el-table
@@ -136,6 +139,7 @@
 <script>
 import detail from './components/detail'
 import { getToken } from '@/utils/auth'
+const path = require('path')
 const statusObj = {
   0: '未审核',
   1: '审核通过',
@@ -190,7 +194,8 @@ export default {
       uploadHeader: {
         Authorization: 'Bearer ' + getToken()
       },
-      multipleSelection: []
+      multipleSelection: [],
+      timer: null
     }
   },
   computed: {
@@ -203,7 +208,24 @@ export default {
     this.getAreaList()
     this.userInfo.isSuper && this.getPrisonList()
   },
+  beforeDestroy() {
+    clearTimeout(this.timer)
+  },
   methods: {
+    download() {
+      const anchor = document.createElement('a')
+      anchor.href = path.join('./xlsx/member-info.xlsx')
+      anchor.setAttribute('download', '家属信息.xlsx')
+      anchor.innerHTML = '下载中...'
+      anchor.style.display = 'none'
+      document.body.appendChild(anchor)
+      debugger
+      anchor.click()
+      document.body.removeChild(anchor)
+      this.timer = setTimeout(() => {
+        URL.revokeObjectURL(anchor.href)
+      }, 250)
+    },
     bacthDelete() {
       const pids = this.multipleSelection.map(item => item.memberPID)
       this.$confirm('此操作将批量删除选中数据, 是否继续?', '提示', {

@@ -28,6 +28,9 @@
         :disabled="multipleSelection.length === 0"
         >批量删除</el-button
       >
+      <el-button size="small" type="success" @click="download"
+        >模板下载</el-button
+      >
     </div>
     <div class="table-container">
       <el-table
@@ -79,6 +82,7 @@
 import edit from './components/edit'
 import add from './components/add'
 import { getToken } from '@/utils/auth'
+const path = require('path')
 export default {
   components: { edit, add },
   data() {
@@ -129,6 +133,20 @@ export default {
     }
   },
   methods: {
+    download() {
+      const anchor = document.createElement('a')
+      anchor.href = path.join('./xlsx/other-module.xlsx')
+      anchor.setAttribute('download', '模板.xlsx')
+      anchor.innerHTML = '下载中...'
+      anchor.style.display = 'none'
+      document.body.appendChild(anchor)
+      debugger
+      anchor.click()
+      document.body.removeChild(anchor)
+      this.timer = setTimeout(() => {
+        URL.revokeObjectURL(anchor.href)
+      }, 250)
+    },
     handleOpenAdd() {
       this.$refs.add.dialogVisible = true
     },

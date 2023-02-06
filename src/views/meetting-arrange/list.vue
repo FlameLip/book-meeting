@@ -148,7 +148,6 @@ export default {
     }
   },
   created() {
-    // TODO 搜索需要valid
     this.getList()
     this.getAreaList()
   },

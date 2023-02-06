@@ -55,22 +55,34 @@
           />
         </span>
       </el-form-item>
-      <el-button
-        :loading="loading"
-        type="primary"
-        style="width: 100%; margin-top: 26px"
-        @click.native.prevent="handleLogin"
-      >
-        Login</el-button
-      >
+      <div>
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width: 100%; margin-top: 26px"
+          @click.native.prevent="handleLogin"
+        >
+          登录</el-button
+        >
+      </div>
+      <div style="text-align: center">
+        <el-button
+          type="text"
+          @click.native.prevent="$refs.changePassword.dialogVisible = true"
+        >
+          忘记密码</el-button
+        >
+      </div>
     </el-form>
+    <change-password ref="changePassword" />
   </div>
 </template>
 
 <script>
 import { validUsername } from '@/utils/validate'
-// TODO 6. 添加一个监区选择（某个模块，searchform）
+import changePassword from './components/change-password.vue'
 export default {
+  components: { changePassword },
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
@@ -82,7 +94,7 @@ export default {
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码不小于6位'))
       } else {
         callback()
       }
