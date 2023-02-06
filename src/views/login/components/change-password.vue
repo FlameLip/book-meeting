@@ -20,6 +20,7 @@
           <el-input
             v-model="formData.uname"
             placeholder="请输入用户名"
+            autocomplete="new-password"
           ></el-input>
         </el-form-item>
         <el-form-item label="原密码" prop="passwd">
@@ -119,7 +120,7 @@ export default {
     submit() {
       this.$refs.form.validate(async valid => {
         if (!valid) return
-        await this.$api.modifyUser({ ...this.formData })
+        await this.$api.changePassword({ ...this.formData })
         this.$message.success('密码修改成功')
         this.dialogVisible = false
       })
