@@ -104,7 +104,7 @@
         style="margin: 20px 0 0 170px"
       >
         <el-form-item label="会见时间" prop="window">
-          <template v-if="windowList.length && type === 'audit'">
+          <template v-if="windowList.length && type !== 'call'">
             <el-radio-group
               v-model="formData.window"
               :border="true"
@@ -119,7 +119,7 @@
           </template>
           <div
             class="no-window"
-            v-else-if="type === 'audit' && !windowList.length"
+            v-else-if="type !== 'call' && !windowList.length"
             style="color: #f56c6c"
           >
             无可用会见室
@@ -149,7 +149,7 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer" v-if="type === 'audit'">
+      <span slot="footer" class="dialog-footer" v-if="type !== 'call'">
         <el-button type="danger" @click="reject">拒绝</el-button>
         <el-button
           type="success"

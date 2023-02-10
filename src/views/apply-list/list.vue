@@ -103,6 +103,7 @@
     </div>
     <detail
       ref="detail"
+      type="apply"
       :rowData="rowData"
       :prisonId="prisonId"
       @reload="getList"
