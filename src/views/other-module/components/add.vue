@@ -83,7 +83,7 @@
         <el-form-item label="身份证有效期开始时间" prop="validPeriodStart">
           <el-date-picker
             v-model="formData.validPeriodStart"
-            type="dates"
+            type="date"
             style="width: 220px"
             format="yyyy.MM.dd"
             value-format="yyyy.MM.dd"
@@ -94,7 +94,7 @@
         <el-form-item label="身份证有效期结束时间" prop="validPeriodEnd">
           <el-date-picker
             v-model="formData.validPeriodEnd"
-            type="dates"
+            type="date"
             style="width: 220px"
             format="yyyy.MM.dd"
             value-format="yyyy.MM.dd"

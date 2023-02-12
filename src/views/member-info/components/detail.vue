@@ -5,6 +5,7 @@
       width="1000px"
       center
       :show-close="false"
+      :before-close="handleClose"
     >
       <div class="info-content">
         <div class="info-left">
@@ -170,17 +171,24 @@ export default {
           memberPIDImgBUrl,
           assistImgUrl
         } = this.rowData
+
         this.srcList = [
           fxProfilePhotoUrl,
           memberProfilePhotoUrl,
           memberPIDImgZUrl,
           memberPIDImgBUrl,
           assistImgUrl
-        ]
+        ].filter(item => !!item)
       }
     }
   },
   methods: {
+    handleClose(done) {
+      const a = document.getElementsByClassName('el-image-viewer__wrapper')[0]
+      if (!a) {
+        done()
+      }
+    },
     async accept() {
       await this.$api.memberAccept([
         {

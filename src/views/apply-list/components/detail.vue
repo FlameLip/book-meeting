@@ -5,6 +5,7 @@
       width="1000px"
       style="maxheight: 70vh"
       center
+      :before-close="handleClose"
       :show-close="false"
     >
       <div class="info-content">
@@ -181,24 +182,29 @@ export default {
   watch: {
     async dialogVisible(newVal) {
       if (newVal) {
-        console.log(this.type)
         const { fxProfilePhotoUrl, members } = this.rowData
         this.srcList = [
           fxProfilePhotoUrl,
           members[0].memberPIDImgZUrl,
           members[0].memberPIDImgBUrl
-        ]
+        ].filter(item => !!item)
         this.formData = {
           window: '',
           reason: ''
         }
         this.getApplyrRejectList()
-        await this.getUsableTimeList()
+        if (this.type !== 'call') await this.getUsableTimeList()
         this.initWindow()
       }
     }
   },
   methods: {
+    handleClose(done) {
+      const a = document.getElementsByClassName('el-image-viewer__wrapper')[0]
+      if (!a) {
+        done()
+      }
+    },
     initWindow() {
       const item = this.windowList.find(item => {
         if (
@@ -222,7 +228,7 @@ export default {
     async getUsableTimeList() {
       this.windowList = []
       const res = await this.$api.getUsableTimeList({
-        prisonId: this.prisonId, //监狱ID
+        prisonId: this.prisonId, // 监狱ID
         meetingId: this.rowData.meetingId,
         meetingDate: this.rowData.meetingDate
       })

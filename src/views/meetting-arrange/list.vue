@@ -162,7 +162,7 @@ export default {
       if (typeof searchAllFlag === 'boolean') {
         params = {
           areaName: '',
-          meetingDate: '2022.12.21',
+          meetingDate: '',
           page: 1,
           pageSize: 10,
           prisonId: this.prisonId

@@ -47,8 +47,8 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        target: 'http://120.79.53.240:8090', // 将 '/api' 代理为 'http://www.baidu.com:8000/api'
-        pathRewrite: { '^/api': '' }, // 'http://www.baidu.com:8000/api' 重写为 'http://www.baidu.com:8000/'
+        target: 'http://120.79.53.240:8090',
+        pathRewrite: { '^/api': '' },
         changeOrigin: true, // 代理时不显示主机头的真实来源
         secure: false // 不验证 https 证书
       }
