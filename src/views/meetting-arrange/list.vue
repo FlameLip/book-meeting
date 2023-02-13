@@ -20,7 +20,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="日期" prop="meetingDate">
+        <el-form-item label="会见日期" prop="meetingDate">
           <el-date-picker
             v-model="searchForm.meetingDate"
             type="date"
@@ -103,7 +103,6 @@
 <script>
 import edit from './components/edit'
 import { cloneDeep } from 'lodash'
-import { parseTime } from '@/utils/index'
 import dayjs from 'dayjs'
 export default {
   components: { edit },
@@ -160,9 +159,12 @@ export default {
       this.listLoading = true
       let params = {}
       if (typeof searchAllFlag === 'boolean') {
-        params = {
+        this.searchForm = {
           areaName: '',
-          meetingDate: '',
+          meetingDate: ''
+        }
+        params = {
+          ...this.searchForm,
           page: 1,
           pageSize: 10,
           prisonId: this.prisonId
@@ -170,10 +172,11 @@ export default {
       } else {
         params = {
           ...this.pageOptions,
-          prisonId: this.prisonId,
-          ...this.searchForm
+          ...this.searchForm,
+          prisonId: this.prisonId
         }
       }
+      if (!params.meetingDate) params.meetingDate = ''
       try {
         this.$api.getMettingArrangeList(params).then(res => {
           this.list = res.list

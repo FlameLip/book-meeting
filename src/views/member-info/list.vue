@@ -300,10 +300,14 @@ export default {
       this.listLoading = true
       let params = {}
       if (typeof searchAllFlag === 'boolean') {
+        this.searchForm = {
+          prisonName: '',
+          fxName: '', //服刑人员姓名 空: 不配置姓名
+          areaName: '', // 区域 all:全部, 其他值对应的监区, 此处的值要求是登录用户可管理的监区.
+          verifyStatus: ''
+        }
         params = {
-          fxName: '',
-          areaName: '',
-          verifyStatus: '',
+          ...this.searchForm,
           page: 1,
           pageSize: 10,
           prisonId: this.prisonId
